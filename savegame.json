@@ -1,0 +1,120 @@
+{
+  "journalist": {
+    "name": "Silvio",
+    "reputation": 10,
+    "notebook": [
+      {
+        "id": "c7",
+        "description": "Un marinaio ubriaco parla di carichi misteriosi",
+        "locationId": "osteria",
+        "discovered": true
+      }
+    ],
+    "articles": [
+      {
+        "id": "a1779091162053",
+        "title": "Ciao",
+        "content": "",
+        "cluesUsed": [
+          {
+            "id": "c7",
+            "description": "Un marinaio ubriaco parla di carichi misteriosi",
+            "locationId": "osteria",
+            "discovered": true
+          }
+        ],
+        "published": true
+      }
+    ],
+    "visitedLocations": [
+      {
+        "id": "redazione",
+        "name": "Redazione del Giornale",
+        "description": "Il tuo posto di lavoro. Qui scrivi i tuoi articoli. Una scrivania piena di carte e una macchina da scrivere ti aspettano.",
+        "clues": [],
+        "visited": true
+      },
+      {
+        "id": "porto",
+        "name": "Il Porto",
+        "description": "Un luogo misterioso e affollato. Pescatori e contrabbandieri si mescolano tra le barche. Qui avvengono molti affari loschi.",
+        "clues": [
+          {
+            "id": "c4",
+            "description": "Documenti falsi trovati in un magazzino abbandonato",
+            "locationId": "porto",
+            "discovered": false
+          },
+          {
+            "id": "c1",
+            "description": "Una lettera anonima che accusa il sindaco di corruzione",
+            "locationId": "porto",
+            "discovered": false
+          },
+          {
+            "id": "c2",
+            "description": "Tracce di contrabbando sul molo numero 7",
+            "locationId": "porto",
+            "discovered": false
+          }
+        ],
+        "visited": true
+      },
+      {
+        "id": "mercato",
+        "name": "Il Mercato",
+        "description": "Sempre affollato di gente. Ottimo posto per raccogliere voci e pettegolezzi. I commercianti sanno sempre tutto.",
+        "clues": [
+          {
+            "id": "c3",
+            "description": "Un testimone ha visto il sindaco al porto di notte",
+            "locationId": "mercato",
+            "discovered": false
+          },
+          {
+            "id": "c5",
+            "description": "Il commerciante riferisce di pagamenti sospetti al municipio",
+            "locationId": "mercato",
+            "discovered": false
+          }
+        ],
+        "visited": true
+      },
+      {
+        "id": "municipio",
+        "name": "Il Municipio",
+        "description": "Il centro del potere cittadino. Il sindaco governa da qui. Aria di corruzione si respira tra questi corridoi.",
+        "clues": [
+          {
+            "id": "c6",
+            "description": "Un registro contabile con cifre che non tornano",
+            "locationId": "municipio",
+            "discovered": false
+          }
+        ],
+        "visited": true
+      },
+      {
+        "id": "osteria",
+        "name": "L\u0027Osteria del Porto",
+        "description": "Un locale fumoso frequentato da marinai e lavoratori. Le lingue si sciolgono facilmente con un bicchiere di vino.",
+        "clues": [
+          {
+            "id": "c7",
+            "description": "Un marinaio ubriaco parla di carichi misteriosi",
+            "locationId": "osteria",
+            "discovered": true
+          },
+          {
+            "id": "c8",
+            "description": "Una fotografia che ritrae persone sospette",
+            "locationId": "osteria",
+            "discovered": false
+          }
+        ],
+        "visited": true
+      }
+    ]
+  },
+  "currentLocationId": "osteria"
+}

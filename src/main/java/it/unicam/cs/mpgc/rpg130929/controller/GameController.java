@@ -2,54 +2,64 @@ package it.unicam.cs.mpgc.rpg130929.controller;
 
 import it.unicam.cs.mpgc.rpg130929.interfaces.GameRepository;
 import it.unicam.cs.mpgc.rpg130929.model.*;
+import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameController {
 
     private final GameRepository repository;
+    private final GameDataLoader dataLoader;
     private Journalist journalist;
     private final Map<String, Location> locations;
     private final Map<String, NPC> npcs;
+    private final Map<String, Clue> clues;
     private Location currentLocation;
 
     public GameController(GameRepository repository) {
         if (repository == null) throw new IllegalArgumentException("Repository non valido");
         this.repository = repository;
+        this.dataLoader = new GameDataLoader();
         this.locations = new HashMap<>();
         this.npcs = new HashMap<>();
+        this.clues = new HashMap<>();
         initializeGame();
     }
 
     private void initializeGame() {
         journalist = new Journalist("Silvio");
+        loadClues();
+        loadLocations();
+        loadNpcs();
+        currentLocation = locations.get("redazione");
+        journalist.visitLocation(currentLocation);
+    }
 
-        Location redazione = new Location("redazione", "Redazione del Giornale",
-                "Il tuo posto di lavoro. Qui scrivi i tuoi articoli.");
-        Location porto = new Location("porto", "Il Porto",
-                "Un luogo misterioso. Molti affari loschi avvengono qui.");
-        Location mercato = new Location("mercato", "Il Mercato",
-                "Sempre affollato. Ottimo posto per raccogliere voci.");
+    private void loadClues() {
+        dataLoader.loadClues().forEach(clue -> clues.put(clue.getId(), clue));
+    }
 
-        Clue clue1 = new Clue("c1", "Una lettera anonima che accusa il sindaco", "porto");
-        Clue clue2 = new Clue("c2", "Tracce di contrabbando sul molo", "porto");
-        Clue clue3 = new Clue("c3", "Un testimone ha visto qualcosa di strano", "mercato");
+    private void loadLocations() {
+        dataLoader.loadLocations().forEach(location -> {
+            clues.values().stream()
+                    .filter(clue -> clue.getLocationId() != null &&
+                            clue.getLocationId().equals(location.getId()))
+                    .forEach(location::addClue);
+            locations.put(location.getId(), location);
+        });
+    }
 
-        porto.addClue(clue1);
-        porto.addClue(clue2);
-        mercato.addClue(clue3);
-
-        NPC informatore = new NPC("n1", "Vecchio Mario", "Informatore");
-        informatore.addDialogue("Psst... ho sentito cose strane al porto...");
-        informatore.addClue(clue3);
-
-        locations.put(redazione.getId(), redazione);
-        locations.put(porto.getId(), porto);
-        locations.put(mercato.getId(), mercato);
-        npcs.put(informatore.getId(), informatore);
-
-        currentLocation = redazione;
-        journalist.visitLocation(redazione);
+    private void loadNpcs() {
+        dataLoader.loadNpcs().forEach(npcData -> {
+            NPC npc = new NPC(npcData.id, npcData.name, npcData.role);
+            npcData.dialogues.forEach(npc::addDialogue);
+            npcData.clueIds.stream()
+                    .map(clues::get)
+                    .filter(Objects::nonNull)
+                    .forEach(npc::addClue);
+            npcs.put(npc.getId(), npc);
+        });
     }
 
     public Journalist getJournalist() { return journalist; }
@@ -57,6 +67,14 @@ public class GameController {
 
     public Collection<Location> getAllLocations() {
         return Collections.unmodifiableCollection(locations.values());
+    }
+
+    public List<NPC> getNpcsInCurrentLocation() {
+        return dataLoader.loadNpcs().stream()
+                .filter(data -> data.locationId.equals(currentLocation.getId()))
+                .map(data -> npcs.get(data.id))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public void moveToLocation(String locationId) {
@@ -71,8 +89,15 @@ public class GameController {
         journalist.addClueToNotebook(clue);
     }
 
+    public void collectAllCluesInCurrentLocation() {
+        currentLocation.getClues().stream()
+                .filter(clue -> !clue.isDiscovered())
+                .forEach(this::collectClue);
+    }
+
     public Article createArticle(String title) {
-        if (title == null || title.isEmpty()) throw new IllegalArgumentException("Titolo non valido");
+        if (title == null || title.isEmpty())
+            throw new IllegalArgumentException("Titolo non valido");
         Article article = new Article("a" + System.currentTimeMillis(), title);
         journalist.addArticle(article);
         return article;
@@ -90,5 +115,15 @@ public class GameController {
 
     public boolean hasSavedGame() {
         return repository.hasSavedGame();
+    }
+
+    public int getTotalClues() {
+        return clues.size();
+    }
+
+    public int getDiscoveredCluesCount() {
+        return (int) clues.values().stream()
+                .filter(Clue::isDiscovered)
+                .count();
     }
 }

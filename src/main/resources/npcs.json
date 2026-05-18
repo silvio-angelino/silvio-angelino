@@ -1,0 +1,50 @@
+[
+  {
+    "id": "n1",
+    "name": "Vecchio Mario",
+    "role": "Informatore",
+    "locationId": "mercato",
+    "dialogues": [
+      "Psst... ho sentito cose strane al porto...",
+      "Il sindaco non è quello che sembra, giovane...",
+      "Stai attento, ci sono occhi dappertutto in questa città."
+    ],
+    "clueIds": ["c3"]
+  },
+  {
+    "id": "n2",
+    "name": "Rosa la Pescivendola",
+    "role": "Commerciante",
+    "locationId": "mercato",
+    "dialogues": [
+      "Ogni settimana vedo facce nuove al porto...",
+      "Qualcuno sta pagando bene per il silenzio della gente.",
+      "Ho visto cose che non avrei dovuto vedere."
+    ],
+    "clueIds": ["c5"]
+  },
+  {
+    "id": "n3",
+    "name": "Capitano Bruno",
+    "role": "Marinaio",
+    "locationId": "osteria",
+    "dialogues": [
+      "Un altro bicchiere e ti racconto tutto...",
+      "Quella notte al molo 7 c'era qualcosa di strano.",
+      "I carichi arrivavano sempre a mezzanotte."
+    ],
+    "clueIds": ["c7"]
+  },
+  {
+    "id": "n4",
+    "name": "Segretaria del Sindaco",
+    "role": "Funzionario",
+    "locationId": "municipio",
+    "dialogues": [
+      "Il sindaco non riceve senza appuntamento.",
+      "Non so nulla di quei documenti...",
+      "Per favore, non mi metta nei guai."
+    ],
+    "clueIds": ["c6"]
+  }
+]

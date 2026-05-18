@@ -1,0 +1,42 @@
+[
+  {
+    "id": "c1",
+    "description": "Una lettera anonima che accusa il sindaco di corruzione",
+    "locationId": "porto"
+  },
+  {
+    "id": "c2",
+    "description": "Tracce di contrabbando sul molo numero 7",
+    "locationId": "porto"
+  },
+  {
+    "id": "c3",
+    "description": "Un testimone ha visto il sindaco al porto di notte",
+    "locationId": "mercato"
+  },
+  {
+    "id": "c4",
+    "description": "Documenti falsi trovati in un magazzino abbandonato",
+    "locationId": "porto"
+  },
+  {
+    "id": "c5",
+    "description": "Il commerciante riferisce di pagamenti sospetti al municipio",
+    "locationId": "mercato"
+  },
+  {
+    "id": "c6",
+    "description": "Un registro contabile con cifre che non tornano",
+    "locationId": "municipio"
+  },
+  {
+    "id": "c7",
+    "description": "Un marinaio ubriaco parla di carichi misteriosi",
+    "locationId": "osteria"
+  },
+  {
+    "id": "c8",
+    "description": "Una fotografia che ritrae persone sospette",
+    "locationId": "osteria"
+  }
+]

@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Journalist {
+public class Journalist extends GameCharacter {
 
-    private final String name;
     private int reputation;
     private final List<Clue> notebook;
     private final List<Article> articles;
     private final List<Location> visitedLocations;
 
+    public Journalist() {
+        super();
+        this.notebook = new ArrayList<>();
+        this.articles = new ArrayList<>();
+        this.visitedLocations = new ArrayList<>();
+    }
+
     public Journalist(String name) {
-        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Nome non valido");
-        this.name = name;
+        super(name, "Giornalista");
         this.reputation = 0;
         this.notebook = new ArrayList<>();
         this.articles = new ArrayList<>();
         this.visitedLocations = new ArrayList<>();
     }
 
-    public String getName() { return name; }
+    @Override
+    public void presentati() {
+        System.out.println("Sono " + getName() + ", giornalista investigativo.");
+    }
+
     public int getReputation() { return reputation; }
 
     public void addClueToNotebook(Clue clue) {

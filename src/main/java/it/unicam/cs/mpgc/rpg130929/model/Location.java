@@ -6,11 +6,16 @@ import java.util.List;
 
 public class Location {
 
-    private final String id;
-    private final String name;
-    private final String description;
-    private final List<Clue> clues;
+    private String id;
+    private String name;
+    private String description;
+    private List<Clue> clues;
     private boolean visited;
+
+    public Location() {
+        this.clues = new ArrayList<>();
+        this.visited = false;
+    }
 
     public Location(String id, String name, String description) {
         if (id == null || id.isEmpty()) throw new IllegalArgumentException("Id non valido");
@@ -29,11 +34,13 @@ public class Location {
     public void visit() { this.visited = true; }
 
     public void addClue(Clue clue) {
-        if (clue == null) throw new IllegalArgumentException("Indizio non valido");
+        if (clue == null) return;
+        if (clues == null) clues = new ArrayList<>();
         if (!clues.contains(clue)) clues.add(clue);
     }
 
     public List<Clue> getClues() {
+        if (clues == null) clues = new ArrayList<>();
         return Collections.unmodifiableList(clues);
     }
 
@@ -42,11 +49,11 @@ public class Location {
         if (this == obj) return true;
         if (!(obj instanceof Location)) return false;
         Location other = (Location) obj;
-        return this.id.equals(other.id);
+        return this.id != null && this.id.equals(other.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id != null ? id.hashCode() : 0;
     }
 }

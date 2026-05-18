@@ -1,0 +1,27 @@
+[
+  {
+    "id": "redazione",
+    "name": "Redazione del Giornale",
+    "description": "Il tuo posto di lavoro. Qui scrivi i tuoi articoli. Una scrivania piena di carte e una macchina da scrivere ti aspettano."
+  },
+  {
+    "id": "porto",
+    "name": "Il Porto",
+    "description": "Un luogo misterioso e affollato. Pescatori e contrabbandieri si mescolano tra le barche. Qui avvengono molti affari loschi."
+  },
+  {
+    "id": "mercato",
+    "name": "Il Mercato",
+    "description": "Sempre affollato di gente. Ottimo posto per raccogliere voci e pettegolezzi. I commercianti sanno sempre tutto."
+  },
+  {
+    "id": "municipio",
+    "name": "Il Municipio",
+    "description": "Il centro del potere cittadino. Il sindaco governa da qui. Aria di corruzione si respira tra questi corridoi."
+  },
+  {
+    "id": "osteria",
+    "name": "L'Osteria del Porto",
+    "description": "Un locale fumoso frequentato da marinai e lavoratori. Le lingue si sciolgono facilmente con un bicchiere di vino."
+  }
+]

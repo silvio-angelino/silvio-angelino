@@ -2,10 +2,14 @@ package it.unicam.cs.mpgc.rpg130929.model;
 
 public class Clue {
 
-    private final String id;
-    private final String description;
-    private final String locationId;
+    private String id;
+    private String description;
+    private String locationId;
     private boolean discovered;
+
+    public Clue() {
+        this.discovered = false;
+    }
 
     public Clue(String id, String description, String locationId) {
         if (id == null || id.isEmpty()) throw new IllegalArgumentException("Id non valido");
@@ -27,11 +31,11 @@ public class Clue {
         if (this == obj) return true;
         if (!(obj instanceof Clue)) return false;
         Clue other = (Clue) obj;
-        return this.id.equals(other.id);
+        return this.id != null && this.id.equals(other.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id != null ? id.hashCode() : 0;
     }
 }
