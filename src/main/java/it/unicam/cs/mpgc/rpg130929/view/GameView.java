@@ -19,15 +19,15 @@ public class GameView {
     private Label reputationLabel;
     private Label cluesCountLabel;
     private VBox npcPanel;
+    private MapView mapView;
     private Font pixelFont;
 
     public GameView(GameController controller, Stage stage) {
         this.controller = controller;
         this.stage = stage;
         this.pixelFont = Font.loadFont(
-                getClass().getClassLoader().getResourceAsStream("PressStart2P-Regular.ttf"),
-                10
-        );
+                getClass().getClassLoader()
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 10);
     }
 
     public void show() {
@@ -39,24 +39,28 @@ public class GameView {
         root.setCenter(buildCenterPanel());
         root.setRight(buildRightPanel());
 
-        Scene scene = new Scene(root, 1024, 768);
+        Scene scene = new Scene(root, 1280, 768);
         scene.getStylesheets().add(
-                getClass().getClassLoader().getResource("style.css").toExternalForm()
+                getClass().getClassLoader()
+                        .getResource("style.css").toExternalForm()
         );
-        stage.setTitle("IL CRONISTA");
+
+        stage.setTitle("IL CRONISTA - OPERAZIONE OMBRA");
         stage.setScene(scene);
         stage.show();
 
+        mapView.getCanvas().requestFocus();
         updateView();
     }
 
     private HBox buildTopPanel() {
         HBox top = new HBox(30);
         top.setPadding(new Insets(15));
-        top.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 0 2 0;");
+        top.setStyle("-fx-background-color: #0a0a0a; " +
+                "-fx-border-color: #00ff41; -fx-border-width: 0 0 2 0;");
 
-        Label title = new Label(">> IL CRONISTA <<");
-        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 14px;");
+        Label title = new Label(">> OPERAZIONE OMBRA - 1935 <<");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 12px;");
 
         locationLabel = new Label("POSIZIONE: ");
         locationLabel.setStyle("-fx-text-fill: #00ff41; -fx-font-size: 9px;");
@@ -67,37 +71,20 @@ public class GameView {
         cluesCountLabel = new Label("INDIZI: 0/0");
         cluesCountLabel.setStyle("-fx-text-fill: #00ff41; -fx-font-size: 9px;");
 
-        top.getChildren().addAll(title, locationLabel, reputationLabel, cluesCountLabel);
+        Label controls = new Label("[ WASD = MUOVI ]");
+        controls.setStyle("-fx-text-fill: #444444; -fx-font-size: 8px;");
+
+        top.getChildren().addAll(title, locationLabel,
+                reputationLabel, cluesCountLabel, controls);
         return top;
     }
 
     private VBox buildLeftPanel() {
-        VBox left = new VBox(8);
+        VBox left = new VBox(10);
         left.setPadding(new Insets(15));
-        left.setPrefWidth(220);
-        left.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 2 0 0;");
-
-        Label title = new Label("[ LUOGHI ]");
-        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
-        left.getChildren().add(title);
-        left.getChildren().add(new Separator());
-
-        for (Location location : controller.getAllLocations()) {
-            Button btn = new Button("> " + location.getName());
-            btn.setMaxWidth(Double.MAX_VALUE);
-            btn.setOnAction(e -> {
-                controller.moveToLocation(location.getId());
-                updateView();
-            });
-            left.getChildren().add(btn);
-        }
-
-        return left;
-    }
-
-    private VBox buildCenterPanel() {
-        VBox center = new VBox(10);
-        center.setPadding(new Insets(15));
+        left.setPrefWidth(250);
+        left.setStyle("-fx-background-color: #0a0a0a; " +
+                "-fx-border-color: #00ff41; -fx-border-width: 0 2 0 0;");
 
         Label title = new Label("[ SCENARIO ]");
         title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
@@ -105,24 +92,46 @@ public class GameView {
         descriptionArea = new TextArea();
         descriptionArea.setEditable(false);
         descriptionArea.setWrapText(true);
-        descriptionArea.setPrefHeight(150);
+        descriptionArea.setPrefHeight(200);
 
-        Label npcTitle = new Label("[ PERSONAGGI ]");
+        Label npcTitle = new Label("[ CONTATTI ]");
         npcTitle.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
 
         npcPanel = new VBox(5);
 
-        Button collectBtn = new Button("[ CERCA INDIZI ]");
+        Button collectBtn = new Button("[ CERCA PROVE ]");
         collectBtn.setMaxWidth(Double.MAX_VALUE);
         collectBtn.setOnAction(e -> {
             controller.collectAllCluesInCurrentLocation();
             updateView();
-            showAlert("INDIZI RACCOLTI",
-                    "Hai esaminato il luogo.\nIndizi trovati aggiunti al taccuino!");
+            mapView.getCanvas().requestFocus();
+            showAlert("PROVE RACCOLTE",
+                    "Hai esaminato il luogo.\nProve aggiunte al dossier!");
         });
 
-        center.getChildren().addAll(title, descriptionArea,
-                npcTitle, npcPanel, collectBtn);
+        left.getChildren().addAll(title, descriptionArea,
+                new Separator(), npcTitle, npcPanel,
+                new Separator(), collectBtn);
+        return left;
+    }
+
+    private VBox buildCenterPanel() {
+        VBox center = new VBox(10);
+        center.setPadding(new Insets(15));
+
+        Label title = new Label("[ MAPPA CITTA' ]");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
+
+        mapView = new MapView(controller, () -> {
+            updateView();
+        });
+
+        Label hint = new Label(
+                "W = SU  |  S = GIU  |  A = SX  |  D = DX\n" +
+                        "Raggiungi un luogo per esplorarlo!");
+        hint.setStyle("-fx-text-fill: #444444; -fx-font-size: 7px;");
+
+        center.getChildren().addAll(title, mapView.getCanvas(), hint);
         return center;
     }
 
@@ -130,55 +139,69 @@ public class GameView {
         VBox right = new VBox(10);
         right.setPadding(new Insets(15));
         right.setPrefWidth(280);
-        right.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 0 0 2;");
+        right.setStyle("-fx-background-color: #0a0a0a; " +
+                "-fx-border-color: #00ff41; -fx-border-width: 0 0 0 2;");
 
-        Label title = new Label("[ TACCUINO ]");
+        Label title = new Label("[ DOSSIER ]");
         title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
 
         cluesList = new ListView<>();
         cluesList.setPrefHeight(400);
 
-        Button writeBtn = new Button("[ SCRIVI ARTICOLO ]");
+        Button writeBtn = new Button("[ SCRIVI RAPPORTO ]");
         writeBtn.setMaxWidth(Double.MAX_VALUE);
-        writeBtn.setOnAction(e -> writeArticle());
+        writeBtn.setOnAction(e -> {
+            writeArticle();
+            mapView.getCanvas().requestFocus();
+        });
 
-        right.getChildren().addAll(title, cluesList, writeBtn);
+        right.getChildren().addAll(title, cluesList,
+                new Separator(), writeBtn);
         return right;
     }
 
     private void updateView() {
         Location current = controller.getCurrentLocation();
-        locationLabel.setText("POSIZIONE: " + current.getName().toUpperCase());
+        locationLabel.setText("POSIZIONE: " +
+                current.getName().toUpperCase());
         descriptionArea.setText(current.getDescription());
-        reputationLabel.setText("REP: " + controller.getJournalist().getReputation());
-        cluesCountLabel.setText("INDIZI: " + controller.getDiscoveredCluesCount()
-                + "/" + controller.getTotalClues());
+        reputationLabel.setText("REP: " +
+                controller.getJournalist().getReputation());
+        cluesCountLabel.setText("PROVE: " +
+                controller.getDiscoveredCluesCount() +
+                "/" + controller.getTotalClues());
 
         cluesList.getItems().clear();
         controller.getJournalist().getNotebook()
-                .forEach(clue -> cluesList.getItems().add("> " + clue.getDescription()));
+                .forEach(clue -> cluesList.getItems()
+                        .add("> " + clue.getDescription()));
 
         npcPanel.getChildren().clear();
         controller.getNpcsInCurrentLocation().forEach(npc -> {
             Button npcBtn = new Button(">> " + npc.getName()
                     + " [" + npc.getRole().toUpperCase() + "]");
             npcBtn.setMaxWidth(Double.MAX_VALUE);
-            npcBtn.setOnAction(e -> showNpcDialogue(npc));
+            npcBtn.setOnAction(e -> {
+                showNpcDialogue(npc);
+                mapView.getCanvas().requestFocus();
+            });
             npcPanel.getChildren().add(npcBtn);
         });
 
         if (controller.getNpcsInCurrentLocation().isEmpty()) {
-            Label noNpc = new Label("// nessun personaggio //");
+            Label noNpc = new Label("// nessun contatto //");
             noNpc.setStyle("-fx-text-fill: #444444; -fx-font-size: 8px;");
             npcPanel.getChildren().add(noNpc);
         }
+
+        if (mapView != null) mapView.refresh();
     }
 
     private void showNpcDialogue(NPC npc) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("DIALOGO");
-        alert.setHeaderText(npc.getName().toUpperCase() + " - " + npc.getRole());
-
+        alert.setTitle("CONTATTO");
+        alert.setHeaderText(npc.getName().toUpperCase() +
+                " - " + npc.getRole());
         String dialogue = String.join("\n\n", npc.getDialogues());
         alert.setContentText(dialogue);
         alert.showAndWait();
@@ -186,7 +209,7 @@ public class GameView {
         npc.getCluesProvided().forEach(clue -> {
             if (!clue.isDiscovered()) {
                 controller.collectClue(clue);
-                showAlert("NUOVO INDIZIO!", clue.getDescription());
+                showAlert("NUOVA PROVA!", clue.getDescription());
             }
         });
 
@@ -196,13 +219,14 @@ public class GameView {
     private void writeArticle() {
         if (controller.getJournalist().getNotebook().isEmpty()) {
             showAlert("ATTENZIONE",
-                    "Non hai ancora raccolto indizi!\n\nEsplora i luoghi e\nparla con i personaggi.");
+                    "Non hai ancora raccolto prove!\n\n" +
+                            "Esplora la citta' e\nparla con i contatti.");
             return;
         }
 
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("NUOVO ARTICOLO");
-        dialog.setHeaderText("Inserisci il titolo dell'articolo");
+        dialog.setTitle("NUOVO RAPPORTO");
+        dialog.setHeaderText("Scrivi il tuo rapporto segreto");
         dialog.setContentText("Titolo:");
         dialog.showAndWait().ifPresent(title -> {
             if (!title.isEmpty()) {
@@ -218,19 +242,20 @@ public class GameView {
 
     private void checkVictory() {
         if (controller.getJournalist().getReputation() >= 100) {
-            showAlert("VITTORIA!",
-                    "Hai raggiunto 100 di reputazione!\n\n" +
-                            "Il tuo articolo ha scosso la citta'!\n" +
-                            "Il sindaco e' stato smascherato!\n\n" +
-                            "COMPLIMENTI " +
-                            controller.getJournalist().getName().toUpperCase() + "!");
+            showAlert("MISSIONE COMPIUTA!",
+                    "Hai smascherato la rete di spie!\n\n" +
+                            "Il tuo rapporto ha scosso\n" +
+                            "i servizi segreti!\n\n" +
+                            "AGENTE " +
+                            controller.getJournalist().getName().toUpperCase() +
+                            " - MISSIONE COMPLETATA!");
         } else {
-            showAlert("ARTICOLO PUBBLICATO!",
-                    "Reputazione guadagnata: +" +
-                            controller.getJournalist().getNotebook().size() * 10 +
-                            "\nReputazione totale: " +
+            showAlert("RAPPORTO INVIATO",
+                    "Prove usate: " +
+                            controller.getJournalist().getNotebook().size() +
+                            "\nReputazione: " +
                             controller.getJournalist().getReputation() +
-                            "\n\nContinua a raccogliere indizi!");
+                            "\n\nContinua a investigare!");
         }
     }
 

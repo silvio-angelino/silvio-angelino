@@ -1,27 +1,44 @@
 [
   {
     "id": "redazione",
-    "name": "Redazione del Giornale",
-    "description": "Il tuo posto di lavoro. Qui scrivi i tuoi articoli. Una scrivania piena di carte e una macchina da scrivere ti aspettano."
+    "name": "Redazione",
+    "description": "La tua base operativa. Qui scrivi i tuoi articoli e ricevi informazioni riservate. Una radio gracchiante trasmette notizie di guerra.",
+    "x": 5,
+    "y": 5
   },
   {
     "id": "porto",
-    "name": "Il Porto",
-    "description": "Un luogo misterioso e affollato. Pescatori e contrabbandieri si mescolano tra le barche. Qui avvengono molti affari loschi."
+    "name": "Porto",
+    "description": "Navi cargo scaricano merci misteriose di notte. Si vocifera che alcune casse contengano documenti segreti per agenti stranieri.",
+    "x": 2,
+    "y": 8
+  },
+  {
+    "id": "ambasciata",
+    "name": "Ambasciata",
+    "description": "L'ambasciata straniera pullula di diplomatici sospetti. Ogni finestra nasconde occhi indiscreti.",
+    "x": 8,
+    "y": 2
   },
   {
     "id": "mercato",
-    "name": "Il Mercato",
-    "description": "Sempre affollato di gente. Ottimo posto per raccogliere voci e pettegolezzi. I commercianti sanno sempre tutto."
-  },
-  {
-    "id": "municipio",
-    "name": "Il Municipio",
-    "description": "Il centro del potere cittadino. Il sindaco governa da qui. Aria di corruzione si respira tra questi corridoi."
+    "name": "Mercato Nero",
+    "description": "Qui si scambiano informazioni proibite. I venditori parlano sottovoce e spariscono all'arrivo delle guardie.",
+    "x": 3,
+    "y": 3
   },
   {
     "id": "osteria",
-    "name": "L'Osteria del Porto",
-    "description": "Un locale fumoso frequentato da marinai e lavoratori. Le lingue si sciolgono facilmente con un bicchiere di vino."
+    "name": "Osteria dei Segreti",
+    "description": "Ritrovo di spie e informatori. Il vino scorre e con esso anche i segreti piu' pericolosi.",
+    "x": 7,
+    "y": 7
+  },
+  {
+    "id": "stazione",
+    "name": "Stazione Ferroviaria",
+    "description": "Agenti segreti arrivano e partono ogni giorno. Le valigie contengono piu' segreti che vestiti.",
+    "x": 9,
+    "y": 5
   }
 ]

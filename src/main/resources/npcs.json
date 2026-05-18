@@ -1,50 +1,62 @@
 [
   {
     "id": "n1",
-    "name": "Vecchio Mario",
-    "role": "Informatore",
-    "locationId": "mercato",
+    "name": "Agente Russo",
+    "role": "Spia",
+    "locationId": "porto",
     "dialogues": [
-      "Psst... ho sentito cose strane al porto...",
-      "Il sindaco non è quello che sembra, giovane...",
-      "Stai attento, ci sono occhi dappertutto in questa città."
+      "Non so di cosa parli, giornalista...",
+      "Certe casse non andrebbero aperte.",
+      "Vattene prima che sia troppo tardi."
+    ],
+    "clueIds": ["c1"]
+  },
+  {
+    "id": "n2",
+    "name": "Console Straniero",
+    "role": "Diplomatico",
+    "locationId": "ambasciata",
+    "dialogues": [
+      "Questa e' proprieta' diplomatica, non puoi stare qui.",
+      "I nostri affari non riguardano la stampa.",
+      "Certi segreti costano la vita."
     ],
     "clueIds": ["c3"]
   },
   {
-    "id": "n2",
-    "name": "Rosa la Pescivendola",
-    "role": "Commerciante",
+    "id": "n3",
+    "name": "Vecchia Carmela",
+    "role": "Informatrice",
     "locationId": "mercato",
     "dialogues": [
-      "Ogni settimana vedo facce nuove al porto...",
-      "Qualcuno sta pagando bene per il silenzio della gente.",
-      "Ho visto cose che non avrei dovuto vedere."
+      "Ho visto cose che non avrei dovuto vedere...",
+      "Ogni martedi notte si incontrano al molo.",
+      "Compra qualcosa o vattene, mi dai nell'occhio."
     ],
     "clueIds": ["c5"]
   },
   {
-    "id": "n3",
-    "name": "Capitano Bruno",
-    "role": "Marinaio",
+    "id": "n4",
+    "name": "Tenente Bianchi",
+    "role": "Ufficiale Corrotto",
     "locationId": "osteria",
     "dialogues": [
       "Un altro bicchiere e ti racconto tutto...",
-      "Quella notte al molo 7 c'era qualcosa di strano.",
-      "I carichi arrivavano sempre a mezzanotte."
+      "Il governo sa tutto ma fa finta di niente.",
+      "Certi nomi non si possono pronunciare ad alta voce."
     ],
     "clueIds": ["c7"]
   },
   {
-    "id": "n4",
-    "name": "Segretaria del Sindaco",
-    "role": "Funzionario",
-    "locationId": "municipio",
+    "id": "n5",
+    "name": "Portabagagli Nico",
+    "role": "Testimone",
+    "locationId": "stazione",
     "dialogues": [
-      "Il sindaco non riceve senza appuntamento.",
-      "Non so nulla di quei documenti...",
-      "Per favore, non mi metta nei guai."
+      "Ogni notte arriva un treno speciale senza passeggeri.",
+      "Ho visto uomini in nero scaricare valigie pesantissime.",
+      "Mi hanno pagato per non vedere nulla."
     ],
-    "clueIds": ["c6"]
+    "clueIds": ["c9"]
   }
 ]
