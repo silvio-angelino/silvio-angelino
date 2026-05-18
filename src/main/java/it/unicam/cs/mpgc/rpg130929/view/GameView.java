@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class GameView {
@@ -18,10 +19,15 @@ public class GameView {
     private Label reputationLabel;
     private Label cluesCountLabel;
     private VBox npcPanel;
+    private Font pixelFont;
 
     public GameView(GameController controller, Stage stage) {
         this.controller = controller;
         this.stage = stage;
+        this.pixelFont = Font.loadFont(
+                getClass().getClassLoader().getResourceAsStream("PressStart2P-Regular.ttf"),
+                10
+        );
     }
 
     public void show() {
@@ -34,7 +40,10 @@ public class GameView {
         root.setRight(buildRightPanel());
 
         Scene scene = new Scene(root, 1024, 768);
-        stage.setTitle("Il Cronista - Gioco di Ruolo");
+        scene.getStylesheets().add(
+                getClass().getClassLoader().getResource("style.css").toExternalForm()
+        );
+        stage.setTitle("IL CRONISTA");
         stage.setScene(scene);
         stage.show();
 
@@ -42,37 +51,40 @@ public class GameView {
     }
 
     private HBox buildTopPanel() {
-        HBox top = new HBox(20);
-        top.setPadding(new Insets(10));
-        top.setStyle("-fx-background-color: #2c2c2c;");
+        HBox top = new HBox(30);
+        top.setPadding(new Insets(15));
+        top.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 0 2 0;");
 
-        locationLabel = new Label("Posizione: ");
-        locationLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+        Label title = new Label(">> IL CRONISTA <<");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 14px;");
 
-        reputationLabel = new Label("Reputazione: 0");
-        reputationLabel.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 14px;");
+        locationLabel = new Label("POSIZIONE: ");
+        locationLabel.setStyle("-fx-text-fill: #00ff41; -fx-font-size: 9px;");
 
-        cluesCountLabel = new Label("Indizi: 0/0");
-        cluesCountLabel.setStyle("-fx-text-fill: #90EE90; -fx-font-size: 14px;");
+        reputationLabel = new Label("REP: 0");
+        reputationLabel.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 9px;");
 
-        top.getChildren().addAll(locationLabel, reputationLabel, cluesCountLabel);
+        cluesCountLabel = new Label("INDIZI: 0/0");
+        cluesCountLabel.setStyle("-fx-text-fill: #00ff41; -fx-font-size: 9px;");
+
+        top.getChildren().addAll(title, locationLabel, reputationLabel, cluesCountLabel);
         return top;
     }
 
     private VBox buildLeftPanel() {
-        VBox left = new VBox(10);
-        left.setPadding(new Insets(10));
-        left.setPrefWidth(200);
-        left.setStyle("-fx-background-color: #1e1e1e;");
+        VBox left = new VBox(8);
+        left.setPadding(new Insets(15));
+        left.setPrefWidth(220);
+        left.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 2 0 0;");
 
-        Label title = new Label("LUOGHI");
-        title.setStyle("-fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 14px;");
+        Label title = new Label("[ LUOGHI ]");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
         left.getChildren().add(title);
+        left.getChildren().add(new Separator());
 
         for (Location location : controller.getAllLocations()) {
-            Button btn = new Button(location.getName());
+            Button btn = new Button("> " + location.getName());
             btn.setMaxWidth(Double.MAX_VALUE);
-            btn.setStyle("-fx-background-color: #3c3c3c; -fx-text-fill: white;");
             btn.setOnAction(e -> {
                 controller.moveToLocation(location.getId());
                 updateView();
@@ -85,48 +97,49 @@ public class GameView {
 
     private VBox buildCenterPanel() {
         VBox center = new VBox(10);
-        center.setPadding(new Insets(10));
+        center.setPadding(new Insets(15));
 
-        Label title = new Label("DESCRIZIONE LUOGO");
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        Label title = new Label("[ SCENARIO ]");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
 
         descriptionArea = new TextArea();
         descriptionArea.setEditable(false);
         descriptionArea.setWrapText(true);
         descriptionArea.setPrefHeight(150);
 
-        npcPanel = new VBox(5);
-        npcPanel.setPadding(new Insets(5));
+        Label npcTitle = new Label("[ PERSONAGGI ]");
+        npcTitle.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
 
-        Button collectBtn = new Button("🔍 Raccogli Indizi");
-        collectBtn.setStyle("-fx-font-size: 13px; -fx-padding: 8px 20px;");
+        npcPanel = new VBox(5);
+
+        Button collectBtn = new Button("[ CERCA INDIZI ]");
         collectBtn.setMaxWidth(Double.MAX_VALUE);
         collectBtn.setOnAction(e -> {
             controller.collectAllCluesInCurrentLocation();
             updateView();
-            showAlert("Hai raccolto tutti gli indizi disponibili in questo luogo!");
+            showAlert("INDIZI RACCOLTI",
+                    "Hai esaminato il luogo.\nIndizi trovati aggiunti al taccuino!");
         });
 
         center.getChildren().addAll(title, descriptionArea,
-                new Label("PERSONAGGI PRESENTI:"), npcPanel, collectBtn);
+                npcTitle, npcPanel, collectBtn);
         return center;
     }
 
     private VBox buildRightPanel() {
         VBox right = new VBox(10);
-        right.setPadding(new Insets(10));
+        right.setPadding(new Insets(15));
         right.setPrefWidth(280);
-        right.setStyle("-fx-background-color: #1e1e1e;");
+        right.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: #00ff41; -fx-border-width: 0 0 0 2;");
 
-        Label title = new Label("TACCUINO");
-        title.setStyle("-fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 14px;");
+        Label title = new Label("[ TACCUINO ]");
+        title.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 10px;");
 
         cluesList = new ListView<>();
         cluesList.setPrefHeight(400);
 
-        Button writeBtn = new Button("✏️ Scrivi Articolo");
+        Button writeBtn = new Button("[ SCRIVI ARTICOLO ]");
         writeBtn.setMaxWidth(Double.MAX_VALUE);
-        writeBtn.setStyle("-fx-font-size: 13px; -fx-padding: 8px 20px;");
         writeBtn.setOnAction(e -> writeArticle());
 
         right.getChildren().addAll(title, cluesList, writeBtn);
@@ -135,46 +148,45 @@ public class GameView {
 
     private void updateView() {
         Location current = controller.getCurrentLocation();
-        locationLabel.setText("📍 " + current.getName());
+        locationLabel.setText("POSIZIONE: " + current.getName().toUpperCase());
         descriptionArea.setText(current.getDescription());
-        reputationLabel.setText("⭐ Reputazione: " +
-                controller.getJournalist().getReputation());
-        cluesCountLabel.setText("🔍 Indizi: " +
-                controller.getDiscoveredCluesCount() + "/" +
-                controller.getTotalClues());
+        reputationLabel.setText("REP: " + controller.getJournalist().getReputation());
+        cluesCountLabel.setText("INDIZI: " + controller.getDiscoveredCluesCount()
+                + "/" + controller.getTotalClues());
 
         cluesList.getItems().clear();
         controller.getJournalist().getNotebook()
-                .forEach(clue -> cluesList.getItems().add("• " + clue.getDescription()));
+                .forEach(clue -> cluesList.getItems().add("> " + clue.getDescription()));
 
         npcPanel.getChildren().clear();
         controller.getNpcsInCurrentLocation().forEach(npc -> {
-            Button npcBtn = new Button("💬 " + npc.getName() + " - " + npc.getRole());
+            Button npcBtn = new Button(">> " + npc.getName()
+                    + " [" + npc.getRole().toUpperCase() + "]");
             npcBtn.setMaxWidth(Double.MAX_VALUE);
             npcBtn.setOnAction(e -> showNpcDialogue(npc));
             npcPanel.getChildren().add(npcBtn);
         });
 
         if (controller.getNpcsInCurrentLocation().isEmpty()) {
-            npcPanel.getChildren().add(new Label("Nessun personaggio presente"));
+            Label noNpc = new Label("// nessun personaggio //");
+            noNpc.setStyle("-fx-text-fill: #444444; -fx-font-size: 8px;");
+            npcPanel.getChildren().add(noNpc);
         }
     }
 
     private void showNpcDialogue(NPC npc) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Dialogo con " + npc.getName());
-        alert.setHeaderText(npc.getName() + " - " + npc.getRole());
+        alert.setTitle("DIALOGO");
+        alert.setHeaderText(npc.getName().toUpperCase() + " - " + npc.getRole());
 
-        String dialogue = npc.getDialogues().stream()
-                .reduce("", (a, b) -> a + "\n\n" + b);
-
+        String dialogue = String.join("\n\n", npc.getDialogues());
         alert.setContentText(dialogue);
         alert.showAndWait();
 
         npc.getCluesProvided().forEach(clue -> {
             if (!clue.isDiscovered()) {
                 controller.collectClue(clue);
-                showAlert("Nuovo indizio raccolto:\n" + clue.getDescription());
+                showAlert("NUOVO INDIZIO!", clue.getDescription());
             }
         });
 
@@ -183,14 +195,15 @@ public class GameView {
 
     private void writeArticle() {
         if (controller.getJournalist().getNotebook().isEmpty()) {
-            showAlert("Non hai ancora raccolto nessun indizio!\nEsplora i luoghi e parla con i personaggi.");
+            showAlert("ATTENZIONE",
+                    "Non hai ancora raccolto indizi!\n\nEsplora i luoghi e\nparla con i personaggi.");
             return;
         }
 
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Nuovo Articolo");
-        dialog.setHeaderText("Scrivi un nuovo articolo");
-        dialog.setContentText("Titolo dell'articolo:");
+        dialog.setTitle("NUOVO ARTICOLO");
+        dialog.setHeaderText("Inserisci il titolo dell'articolo");
+        dialog.setContentText("Titolo:");
         dialog.showAndWait().ifPresent(title -> {
             if (!title.isEmpty()) {
                 Article article = controller.createArticle(title);
@@ -198,16 +211,33 @@ public class GameView {
                         .forEach(article::addClue);
                 controller.publishArticle(article);
                 updateView();
-                showAlert("Articolo pubblicato!\n\"" + title + "\"\n\n" +
-                        "Indizi usati: " + article.getCluesUsed().size() + "\n" +
-                        "Reputazione guadagnata: +" + article.getReputationValue() + "\n" +
-                        "Reputazione totale: " + controller.getJournalist().getReputation());
+                checkVictory();
             }
         });
     }
 
-    private void showAlert(String message) {
+    private void checkVictory() {
+        if (controller.getJournalist().getReputation() >= 100) {
+            showAlert("VITTORIA!",
+                    "Hai raggiunto 100 di reputazione!\n\n" +
+                            "Il tuo articolo ha scosso la citta'!\n" +
+                            "Il sindaco e' stato smascherato!\n\n" +
+                            "COMPLIMENTI " +
+                            controller.getJournalist().getName().toUpperCase() + "!");
+        } else {
+            showAlert("ARTICOLO PUBBLICATO!",
+                    "Reputazione guadagnata: +" +
+                            controller.getJournalist().getNotebook().size() * 10 +
+                            "\nReputazione totale: " +
+                            controller.getJournalist().getReputation() +
+                            "\n\nContinua a raccogliere indizi!");
+        }
+    }
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }

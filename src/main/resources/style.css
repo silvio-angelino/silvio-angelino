@@ -1,0 +1,60 @@
+* {
+    -fx-font-family: 'Press Start 2P';
+}
+
+.root {
+    -fx-background-color: #0a0a0a;
+}
+
+.label {
+    -fx-text-fill: #00ff41;
+    -fx-font-size: 10px;
+}
+
+.button {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: #00ff41;
+    -fx-border-color: #00ff41;
+    -fx-border-width: 2px;
+    -fx-font-size: 8px;
+    -fx-padding: 8px 12px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #00ff41;
+    -fx-text-fill: #0a0a0a;
+}
+
+.text-area {
+    -fx-background-color: #0a0a0a;
+    -fx-text-fill: #00ff41;
+    -fx-border-color: #00ff41;
+    -fx-border-width: 1px;
+    -fx-font-size: 8px;
+}
+
+.text-area .content {
+    -fx-background-color: #0a0a0a;
+}
+
+.list-view {
+    -fx-background-color: #0a0a0a;
+    -fx-border-color: #00ff41;
+    -fx-border-width: 1px;
+}
+
+.list-cell {
+    -fx-background-color: #0a0a0a;
+    -fx-text-fill: #00ff41;
+    -fx-font-size: 7px;
+}
+
+.list-cell:selected {
+    -fx-background-color: #00ff41;
+    -fx-text-fill: #0a0a0a;
+}
+
+.separator {
+    -fx-background-color: #00ff41;
+}
