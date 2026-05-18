@@ -9,7 +9,30 @@
       "Certe casse non andrebbero aperte.",
       "Vattene prima che sia troppo tardi."
     ],
-    "clueIds": ["c1"]
+    "clueIds": ["c1"],
+    "choices": [
+      {
+        "text": "Cosa contengono quelle casse?",
+        "response": "Merci di importazione, niente di illegale.",
+        "requiredCharisma": 0,
+        "clueId": "",
+        "experienceReward": 10
+      },
+      {
+        "text": "Ho visto i documenti. Parlami della rete.",
+        "response": "...Non so nulla. Lasciami in pace.",
+        "requiredCharisma": 7,
+        "clueId": "c2",
+        "experienceReward": 30
+      },
+      {
+        "text": "Ho prove che ti incastrano. Collabora.",
+        "response": "Va bene... il capo si chiama Il Corvo. Opera dall'ambasciata.",
+        "requiredCharisma": 9,
+        "clueId": "c1",
+        "experienceReward": 50
+      }
+    ]
   },
   {
     "id": "n2",
@@ -17,11 +40,34 @@
     "role": "Diplomatico",
     "locationId": "ambasciata",
     "dialogues": [
-      "Questa e' proprieta' diplomatica, non puoi stare qui.",
+      "Questa e' proprieta' diplomatica.",
       "I nostri affari non riguardano la stampa.",
       "Certi segreti costano la vita."
     ],
-    "clueIds": ["c3"]
+    "clueIds": ["c3"],
+    "choices": [
+      {
+        "text": "Sono qui per un'intervista ufficiale.",
+        "response": "Non rilasciamo interviste. Buongiorno.",
+        "requiredCharisma": 0,
+        "clueId": "",
+        "experienceReward": 5
+      },
+      {
+        "text": "Ho informazioni su una fuga di notizie.",
+        "response": "...Interessante. Di cosa si tratta esattamente?",
+        "requiredCharisma": 6,
+        "clueId": "c4",
+        "experienceReward": 25
+      },
+      {
+        "text": "So del piano militare. Parlami del Corvo.",
+        "response": "Come sai di lui?! Il Corvo si incontra ogni venerdi al molo 7.",
+        "requiredCharisma": 10,
+        "clueId": "c3",
+        "experienceReward": 60
+      }
+    ]
   },
   {
     "id": "n3",
@@ -31,9 +77,32 @@
     "dialogues": [
       "Ho visto cose che non avrei dovuto vedere...",
       "Ogni martedi notte si incontrano al molo.",
-      "Compra qualcosa o vattene, mi dai nell'occhio."
+      "Compra qualcosa o vattene."
     ],
-    "clueIds": ["c5"]
+    "clueIds": ["c5"],
+    "choices": [
+      {
+        "text": "Cosa hai visto di strano?",
+        "response": "Uomini in nero che scaricano casse di notte.",
+        "requiredCharisma": 0,
+        "clueId": "c5",
+        "experienceReward": 15
+      },
+      {
+        "text": "Conosci qualcuno chiamato Il Corvo?",
+        "response": "Sssh! Non dire quel nome qui! E' pericoloso...",
+        "requiredCharisma": 5,
+        "clueId": "",
+        "experienceReward": 20
+      },
+      {
+        "text": "Ti proteggero'. Dimmi tutto quello che sai.",
+        "response": "Il Corvo e' un funzionario del governo! Opera dall'interno!",
+        "requiredCharisma": 8,
+        "clueId": "c6",
+        "experienceReward": 45
+      }
+    ]
   },
   {
     "id": "n4",
@@ -43,9 +112,32 @@
     "dialogues": [
       "Un altro bicchiere e ti racconto tutto...",
       "Il governo sa tutto ma fa finta di niente.",
-      "Certi nomi non si possono pronunciare ad alta voce."
+      "Certi nomi non si pronunciano ad alta voce."
     ],
-    "clueIds": ["c7"]
+    "clueIds": ["c7"],
+    "choices": [
+      {
+        "text": "Cosa sai delle spie in citta'?",
+        "response": "Ce ne sono ovunque. Anche qui dentro.",
+        "requiredCharisma": 0,
+        "clueId": "c7",
+        "experienceReward": 15
+      },
+      {
+        "text": "Chi ti paga per tacere?",
+        "response": "Nessuno! Come osi...",
+        "requiredCharisma": 6,
+        "clueId": "",
+        "experienceReward": 10
+      },
+      {
+        "text": "Ho prove della tua corruzione. Parlami del Corvo.",
+        "response": "Il Corvo si nasconde alla stazione! Parte domani notte!",
+        "requiredCharisma": 9,
+        "clueId": "c8",
+        "experienceReward": 55
+      }
+    ]
   },
   {
     "id": "n5",
@@ -53,10 +145,33 @@
     "role": "Testimone",
     "locationId": "stazione",
     "dialogues": [
-      "Ogni notte arriva un treno speciale senza passeggeri.",
-      "Ho visto uomini in nero scaricare valigie pesantissime.",
+      "Ogni notte arriva un treno speciale.",
+      "Ho visto uomini in nero scaricare valigie.",
       "Mi hanno pagato per non vedere nulla."
     ],
-    "clueIds": ["c9"]
+    "clueIds": ["c9"],
+    "choices": [
+      {
+        "text": "Cosa hai visto alla stazione?",
+        "response": "Un uomo con un cappello nero. Molto elegante.",
+        "requiredCharisma": 0,
+        "clueId": "c9",
+        "experienceReward": 15
+      },
+      {
+        "text": "Puoi descrivermi quell'uomo?",
+        "response": "Alto, capelli grigi, cicatrice sulla guancia sinistra.",
+        "requiredCharisma": 5,
+        "clueId": "",
+        "experienceReward": 20
+      },
+      {
+        "text": "Quell'uomo e' Il Corvo. Aiutami a fermarlo.",
+        "response": "Parte col treno delle 23:00! Binario 7! Fate presto!",
+        "requiredCharisma": 7,
+        "clueId": "c10",
+        "experienceReward": 50
+      }
+    ]
   }
 ]

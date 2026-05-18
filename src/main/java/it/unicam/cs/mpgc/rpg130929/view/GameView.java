@@ -2,6 +2,7 @@ package it.unicam.cs.mpgc.rpg130929.view;
 
 import it.unicam.cs.mpgc.rpg130929.controller.GameController;
 import it.unicam.cs.mpgc.rpg130929.model.*;
+import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -15,6 +16,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.List;
+
 public class GameView {
 
     private final GameController controller;
@@ -24,7 +27,11 @@ public class GameView {
     private ListView<String> cluesList;
     private Label reputationLabel;
     private Label cluesCountLabel;
+    private Label statsLabel;
+    private Label levelLabel;
+    private Label xpLabel;
     private VBox npcPanel;
+    private VBox questPanel;
     private MapView mapView;
     private Font pixelFont;
     private Font titleFont;
@@ -36,16 +43,15 @@ public class GameView {
         this.stage = stage;
         this.pixelFont = Font.loadFont(
                 getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 9);
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 8);
         this.titleFont = Font.loadFont(
                 getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 12);
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 11);
     }
 
     public void show() {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #000000;");
-        root.setPadding(new Insets(0));
 
         root.setTop(buildTopPanel());
         root.setLeft(buildLeftPanel());
@@ -53,7 +59,7 @@ public class GameView {
         root.setRight(buildRightPanel());
         root.setBottom(buildBottomPanel());
 
-        Scene scene = new Scene(root, 1280, 800);
+        Scene scene = new Scene(root, 1400, 850);
         scene.setFill(Color.BLACK);
 
         stage.setTitle("IL CRONISTA - OPERAZIONE OMBRA");
@@ -65,16 +71,15 @@ public class GameView {
     }
 
     private HBox buildTopPanel() {
-        HBox top = new HBox();
-        top.setPadding(new Insets(12, 20, 12, 20));
+        HBox top = new HBox(30);
+        top.setPadding(new Insets(10, 20, 10, 20));
         top.setAlignment(Pos.CENTER_LEFT);
-        top.setSpacing(40);
         top.setStyle(
-                "-fx-background-color: #000000;" +
+                "-fx-background-color: #0a0000;" +
                         "-fx-border-color: #FFD700;" +
                         "-fx-border-width: 0 0 2 0;");
 
-        Label title = new Label("// OPERAZIONE OMBRA //");
+        Label title = new Label("// OPERAZIONE OMBRA - 1935 //");
         title.setStyle("-fx-text-fill: #FFD700;");
         if (titleFont != null) title.setFont(titleFont);
 
@@ -86,74 +91,58 @@ public class GameView {
         reputationLabel.setStyle("-fx-text-fill: #FFD700;");
         if (pixelFont != null) reputationLabel.setFont(pixelFont);
 
+        levelLabel = new Label("LV.1");
+        levelLabel.setStyle("-fx-text-fill: #ff4444;");
+        if (pixelFont != null) levelLabel.setFont(pixelFont);
+
+        xpLabel = new Label("XP: 0/100");
+        xpLabel.setStyle("-fx-text-fill: #4444ff;");
+        if (pixelFont != null) xpLabel.setFont(pixelFont);
+
         cluesCountLabel = new Label("PROVE: 0/0");
         cluesCountLabel.setStyle("-fx-text-fill: #00ff41;");
         if (pixelFont != null) cluesCountLabel.setFont(pixelFont);
 
-        Label year = new Label("ANNO 1935");
-        year.setStyle("-fx-text-fill: #444444;");
-        if (pixelFont != null) year.setFont(pixelFont);
-
         top.getChildren().addAll(title, locationLabel,
-                reputationLabel, cluesCountLabel, year);
+                reputationLabel, levelLabel, xpLabel, cluesCountLabel);
         return top;
     }
 
     private VBox buildLeftPanel() {
-        VBox left = new VBox(12);
-        left.setPadding(new Insets(20));
-        left.setPrefWidth(260);
+        VBox left = new VBox(10);
+        left.setPadding(new Insets(15));
+        left.setPrefWidth(270);
         left.setStyle(
                 "-fx-background-color: #050505;" +
-                        "-fx-border-color: #00ff41;" +
+                        "-fx-border-color: #333333;" +
                         "-fx-border-width: 0 1 0 0;");
 
-        Label scenarioTitle = new Label("[ SCENARIO ]");
-        scenarioTitle.setStyle("-fx-text-fill: #FFD700;");
-        if (titleFont != null) scenarioTitle.setFont(titleFont);
-
+        Label scenarioTitle = buildSectionTitle("[ SCENARIO ]");
         descriptionLabel = new Label("");
-        descriptionLabel.setStyle(
-                "-fx-text-fill: #00cc33;" +
-                        "-fx-font-size: 9px;");
+        descriptionLabel.setStyle("-fx-text-fill: #aaaaaa;");
         descriptionLabel.setWrapText(true);
-        descriptionLabel.setTextAlignment(TextAlignment.LEFT);
         if (pixelFont != null)
-            descriptionLabel.setFont(Font.font(pixelFont.getFamily(), 9));
+            descriptionLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 8));
 
-        Separator sep1 = new Separator();
-        sep1.setStyle("-fx-background-color: #1a1a1a;");
+        Separator sep1 = buildSeparator();
 
-        Label contactsTitle = new Label("[ CONTATTI ]");
-        contactsTitle.setStyle("-fx-text-fill: #FFD700;");
-        if (titleFont != null) contactsTitle.setFont(titleFont);
+        Label statsTitle = buildSectionTitle("[ STATISTICHE ]");
+        statsLabel = new Label("");
+        statsLabel.setStyle("-fx-text-fill: #00ff41;");
+        statsLabel.setWrapText(true);
+        if (pixelFont != null)
+            statsLabel.setFont(Font.font(pixelFont.getFamily(), 8));
 
-        npcPanel = new VBox(8);
+        Separator sep2 = buildSeparator();
 
-        Separator sep2 = new Separator();
-        sep2.setStyle("-fx-background-color: #1a1a1a;");
+        Label contactsTitle = buildSectionTitle("[ CONTATTI ]");
+        npcPanel = new VBox(6);
 
-        Button collectBtn = new Button("[ CERCA PROVE ]");
-        collectBtn.setMaxWidth(Double.MAX_VALUE);
-        collectBtn.setStyle(
-                "-fx-background-color: #000000;" +
-                        "-fx-text-fill: #00ff41;" +
-                        "-fx-border-color: #00ff41;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;");
-        if (pixelFont != null) collectBtn.setFont(pixelFont);
-        collectBtn.setOnMouseEntered(e -> collectBtn.setStyle(
-                "-fx-background-color: #00ff41;" +
-                        "-fx-text-fill: #000000;" +
-                        "-fx-border-color: #00ff41;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;"));
-        collectBtn.setOnMouseExited(e -> collectBtn.setStyle(
-                "-fx-background-color: #000000;" +
-                        "-fx-text-fill: #00ff41;" +
-                        "-fx-border-color: #00ff41;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;"));
+        Separator sep3 = buildSeparator();
+
+        Button collectBtn = buildButton(
+                "[ CERCA PROVE ]", "#00ff41");
         collectBtn.setOnAction(e -> {
             controller.collectAllCluesInCurrentLocation();
             updateView();
@@ -161,124 +150,76 @@ public class GameView {
             showMessage("PROVE RACCOLTE NEL LUOGO CORRENTE!");
         });
 
-        left.getChildren().addAll(scenarioTitle, descriptionLabel,
-                sep1, contactsTitle, npcPanel, sep2, collectBtn);
+        left.getChildren().addAll(
+                scenarioTitle, descriptionLabel, sep1,
+                statsTitle, statsLabel, sep2,
+                contactsTitle, npcPanel, sep3, collectBtn);
         return left;
     }
 
     private VBox buildCenterPanel() {
-        VBox center = new VBox(10);
+        VBox center = new VBox(8);
         center.setPadding(new Insets(15));
         center.setAlignment(Pos.TOP_CENTER);
         center.setStyle("-fx-background-color: #000000;");
 
-        Label mapTitle = new Label("[ MAPPA CITTA' - 1935 ]");
-        mapTitle.setStyle("-fx-text-fill: #FFD700;");
-        if (titleFont != null) mapTitle.setFont(titleFont);
+        Label mapTitle = buildSectionTitle("[ MAPPA CITTA' - 1935 ]");
 
-        mapView = new MapView(controller, () -> {
-            updateView();
-        });
+        mapView = new MapView(controller, this::updateView);
 
-        HBox controls = new HBox(20);
+        HBox controls = new HBox(10);
         controls.setAlignment(Pos.CENTER);
+        controls.getChildren().addAll(
+                buildKeyLabel("W"), buildKeyLabel("A"),
+                buildKeyLabel("S"), buildKeyLabel("D"),
+                buildKeyLabel("↑"), buildKeyLabel("↓"),
+                buildKeyLabel("←"), buildKeyLabel("→")
+        );
 
-        Label wKey = buildKeyLabel("W");
-        Label aKey = buildKeyLabel("A");
-        Label sKey = buildKeyLabel("S");
-        Label dKey = buildKeyLabel("D");
-        Label moveLabel = new Label("= MUOVI");
-        moveLabel.setStyle("-fx-text-fill: #444444;");
-        if (pixelFont != null) moveLabel.setFont(
-                Font.font(pixelFont.getFamily(), 8));
+        Label moveLabel = new Label("= MUOVI AGENTE");
+        moveLabel.setStyle("-fx-text-fill: #333333;");
+        if (pixelFont != null)
+            moveLabel.setFont(Font.font(pixelFont.getFamily(), 7));
 
-        controls.getChildren().addAll(wKey, aKey, sKey, dKey, moveLabel);
-
-        center.getChildren().addAll(mapTitle, mapView.getCanvas(), controls);
+        center.getChildren().addAll(
+                mapTitle, mapView.getCanvas(), controls, moveLabel);
         return center;
     }
 
-    private Label buildKeyLabel(String key) {
-        Label label = new Label(key);
-        label.setStyle(
-                "-fx-text-fill: #FFD700;" +
-                        "-fx-border-color: #FFD700;" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-padding: 4px 8px;" +
-                        "-fx-background-color: #111111;");
-        if (pixelFont != null)
-            label.setFont(Font.font(pixelFont.getFamily(), 9));
-        return label;
-    }
-
     private VBox buildRightPanel() {
-        VBox right = new VBox(12);
-        right.setPadding(new Insets(20));
+        VBox right = new VBox(10);
+        right.setPadding(new Insets(15));
         right.setPrefWidth(280);
         right.setStyle(
                 "-fx-background-color: #050505;" +
-                        "-fx-border-color: #00ff41;" +
+                        "-fx-border-color: #333333;" +
                         "-fx-border-width: 0 0 0 1;");
 
-        Label dossierTitle = new Label("[ DOSSIER ]");
-        dossierTitle.setStyle("-fx-text-fill: #FFD700;");
-        if (titleFont != null) dossierTitle.setFont(titleFont);
-
-        Label dossierHint = new Label(
-                "Prove raccolte durante\nl'operazione:");
-        dossierHint.setStyle("-fx-text-fill: #444444;");
-        if (pixelFont != null)
-            dossierHint.setFont(Font.font(pixelFont.getFamily(), 8));
+        Label dossierTitle = buildSectionTitle("[ DOSSIER ]");
 
         cluesList = new ListView<>();
-        cluesList.setPrefHeight(350);
+        cluesList.setPrefHeight(250);
         cluesList.setStyle(
                 "-fx-background-color: #050505;" +
-                        "-fx-border-color: #1a1a1a;" +
-                        "-fx-border-width: 1px;");
+                        "-fx-border-color: #1a1a1a;");
 
-        Separator sep = new Separator();
-        sep.setStyle("-fx-background-color: #1a1a1a;");
+        Separator sep1 = buildSeparator();
 
-        Label statsTitle = new Label("[ STATISTICHE ]");
-        statsTitle.setStyle("-fx-text-fill: #FFD700;");
-        if (titleFont != null) statsTitle.setFont(titleFont);
+        Label questTitle = buildSectionTitle("[ MISSIONI ]");
+        questPanel = new VBox(6);
 
-        Label statsHint = new Label(
-                "Raccogli tutte le prove\ne scrivi il rapporto\nper completare\nla missione!");
-        statsHint.setStyle("-fx-text-fill: #444444;");
-        statsHint.setWrapText(true);
-        if (pixelFont != null)
-            statsHint.setFont(Font.font(pixelFont.getFamily(), 8));
+        Separator sep2 = buildSeparator();
 
-        Button writeBtn = new Button("[ SCRIVI RAPPORTO ]");
-        writeBtn.setMaxWidth(Double.MAX_VALUE);
-        writeBtn.setStyle(
-                "-fx-background-color: #000000;" +
-                        "-fx-text-fill: #FFD700;" +
-                        "-fx-border-color: #FFD700;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;");
-        if (pixelFont != null) writeBtn.setFont(pixelFont);
-        writeBtn.setOnMouseEntered(e -> writeBtn.setStyle(
-                "-fx-background-color: #FFD700;" +
-                        "-fx-text-fill: #000000;" +
-                        "-fx-border-color: #FFD700;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;"));
-        writeBtn.setOnMouseExited(e -> writeBtn.setStyle(
-                "-fx-background-color: #000000;" +
-                        "-fx-text-fill: #FFD700;" +
-                        "-fx-border-color: #FFD700;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-padding: 10px;"));
+        Button writeBtn = buildButton(
+                "[ SCRIVI RAPPORTO ]", "#FFD700");
         writeBtn.setOnAction(e -> {
             writeArticle();
             mapView.getCanvas().requestFocus();
         });
 
-        right.getChildren().addAll(dossierTitle, dossierHint,
-                cluesList, sep, statsTitle, statsHint, writeBtn);
+        right.getChildren().addAll(
+                dossierTitle, cluesList, sep1,
+                questTitle, questPanel, sep2, writeBtn);
         return right;
     }
 
@@ -287,26 +228,81 @@ public class GameView {
         bottom.setPadding(new Insets(8, 20, 8, 20));
         bottom.setAlignment(Pos.CENTER_LEFT);
         bottom.setStyle(
-                "-fx-background-color: #000000;" +
+                "-fx-background-color: #0a0000;" +
                         "-fx-border-color: #FFD700;" +
                         "-fx-border-width: 2 0 0 0;");
 
         messageLabel = new Label(
-                "> Benvenuto, Agente. La missione ha inizio...");
+                "> Operazione Ombra iniziata. Buona fortuna, Agente.");
         messageLabel.setStyle("-fx-text-fill: #00ff41;");
         if (pixelFont != null)
-            messageLabel.setFont(Font.font(pixelFont.getFamily(), 9));
+            messageLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 8));
 
         bottom.getChildren().add(messageLabel);
         return bottom;
+    }
+
+    private Label buildSectionTitle(String text) {
+        Label label = new Label(text);
+        label.setStyle("-fx-text-fill: #FFD700;");
+        if (titleFont != null) label.setFont(titleFont);
+        return label;
+    }
+
+    private Separator buildSeparator() {
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: #1a1a1a;");
+        return sep;
+    }
+
+    private Label buildKeyLabel(String key) {
+        Label label = new Label(key);
+        label.setStyle(
+                "-fx-text-fill: #FFD700;" +
+                        "-fx-border-color: #333333;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-padding: 3px 6px;" +
+                        "-fx-background-color: #111111;");
+        if (pixelFont != null)
+            label.setFont(Font.font(pixelFont.getFamily(), 8));
+        return label;
+    }
+
+    private Button buildButton(String text, String color) {
+        Button btn = new Button(text);
+        btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setStyle(
+                "-fx-background-color: #000000;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-padding: 10px;");
+        if (pixelFont != null) btn.setFont(pixelFont);
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: #000000;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-padding: 10px;"));
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: #000000;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-padding: 10px;"));
+        return btn;
     }
 
     private void showMessage(String message) {
         if (messageTimeline != null) messageTimeline.stop();
         messageLabel.setText("> " + message);
         messageLabel.setStyle("-fx-text-fill: #FFD700;");
+        if (pixelFont != null)
+            messageLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 8));
         messageTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(3), e -> {
+                new KeyFrame(Duration.seconds(4), e -> {
                     messageLabel.setText("> In attesa di ordini...");
                     messageLabel.setStyle("-fx-text-fill: #00ff41;");
                 })
@@ -321,14 +317,21 @@ public class GameView {
         descriptionLabel.setText(current.getDescription());
         reputationLabel.setText("CREDIBILITA': " +
                 controller.getJournalist().getReputation());
+
+        PlayerStats stats = controller.getJournalist().getStats();
+        levelLabel.setText("LV." + stats.getLevel());
+        xpLabel.setText("XP: " + stats.getExperience() +
+                "/" + (stats.getLevel() * 100));
+        statsLabel.setText(
+                "INT: " + stats.getIntelligence() +
+                        "  CAR: " + stats.getCharisma() +
+                        "\nFUR: " + stats.getStealth());
+
         cluesCountLabel.setText("PROVE: " +
                 controller.getDiscoveredCluesCount() +
                 "/" + controller.getTotalClues());
 
         cluesList.getItems().clear();
-        cluesList.setStyle(
-                "-fx-background-color: #050505;" +
-                        "-fx-border-color: #1a1a1a;");
         controller.getJournalist().getNotebook()
                 .forEach(clue -> cluesList.getItems()
                         .add("> " + clue.getDescription()));
@@ -345,7 +348,8 @@ public class GameView {
                             "-fx-border-width: 1px;" +
                             "-fx-padding: 8px;");
             if (pixelFont != null)
-                npcBtn.setFont(Font.font(pixelFont.getFamily(), 8));
+                npcBtn.setFont(
+                        Font.font(pixelFont.getFamily(), 7));
             npcBtn.setOnMouseEntered(e -> npcBtn.setStyle(
                     "-fx-background-color: #001a00;" +
                             "-fx-text-fill: #00ff41;" +
@@ -359,7 +363,7 @@ public class GameView {
                             "-fx-border-width: 1px;" +
                             "-fx-padding: 8px;"));
             npcBtn.setOnAction(e -> {
-                showNpcDialogue(npc);
+                showDialogueChoices(npc);
                 mapView.getCanvas().requestFocus();
             });
             npcPanel.getChildren().add(npcBtn);
@@ -369,29 +373,163 @@ public class GameView {
             Label noNpc = new Label("// nessun contatto //");
             noNpc.setStyle("-fx-text-fill: #333333;");
             if (pixelFont != null)
-                noNpc.setFont(Font.font(pixelFont.getFamily(), 8));
+                noNpc.setFont(Font.font(pixelFont.getFamily(), 7));
             npcPanel.getChildren().add(noNpc);
         }
 
+        updateQuestPanel();
         if (mapView != null) mapView.refresh();
     }
 
-    private void showNpcDialogue(NPC npc) {
+    private void updateQuestPanel() {
+        questPanel.getChildren().clear();
+        controller.getActiveQuests().forEach(quest -> {
+            Label questLabel = new Label(
+                    "▶ " + quest.getTitle() + "\n" +
+                            quest.getCompletedObjectivesCount() +
+                            "/" + quest.getTotalObjectivesCount() +
+                            " obiettivi");
+            questLabel.setStyle(
+                    "-fx-text-fill: #FFD700;" +
+                            "-fx-font-size: 7px;");
+            questLabel.setWrapText(true);
+            if (pixelFont != null)
+                questLabel.setFont(
+                        Font.font(pixelFont.getFamily(), 7));
+            questPanel.getChildren().add(questLabel);
+        });
+
+        controller.getCompletedQuests().forEach(quest -> {
+            Label questLabel = new Label(
+                    "✓ " + quest.getTitle());
+            questLabel.setStyle(
+                    "-fx-text-fill: #00ff41;" +
+                            "-fx-font-size: 7px;");
+            if (pixelFont != null)
+                questLabel.setFont(
+                        Font.font(pixelFont.getFamily(), 7));
+            questPanel.getChildren().add(questLabel);
+        });
+    }
+
+    private void showDialogueChoices(NPC npc) {
+        List<GameDataLoader.ChoiceData> choices =
+                controller.getChoicesForNpc(npc.getId());
+
+        if (choices.isEmpty()) {
+            showSimpleDialogue(npc);
+            return;
+        }
+
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("CONTATTO: " + npc.getName());
+
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(20));
+        root.setStyle("-fx-background-color: #000000;");
+
+        Label nameLabel = new Label(
+                npc.getName().toUpperCase() +
+                        " | " + npc.getRole());
+        nameLabel.setStyle("-fx-text-fill: #FFD700;");
+        if (titleFont != null) nameLabel.setFont(titleFont);
+
+        Label introLabel = new Label(
+                npc.getDialogues().isEmpty() ? "" :
+                        npc.getDialogues().get(0));
+        introLabel.setStyle("-fx-text-fill: #aaaaaa;");
+        introLabel.setWrapText(true);
+        if (pixelFont != null)
+            introLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 8));
+
+        Label charismaLabel = new Label(
+                "Il tuo carisma: " +
+                        controller.getJournalist().getStats().getCharisma());
+        charismaLabel.setStyle("-fx-text-fill: #444444;");
+        if (pixelFont != null)
+            charismaLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 7));
+
+        VBox choicesBox = new VBox(8);
+        Label responseLabel = new Label("");
+        responseLabel.setStyle("-fx-text-fill: #00ff41;");
+        responseLabel.setWrapText(true);
+        if (pixelFont != null)
+            responseLabel.setFont(
+                    Font.font(pixelFont.getFamily(), 8));
+
+        for (GameDataLoader.ChoiceData choice : choices) {
+            boolean canUse = controller.getJournalist()
+                    .getStats()
+                    .canUseDialogueOption(choice.requiredCharisma);
+
+            Button choiceBtn = new Button(
+                    (canUse ? "> " : "[CAR." +
+                            choice.requiredCharisma + "] ") +
+                            choice.text);
+            choiceBtn.setMaxWidth(Double.MAX_VALUE);
+            choiceBtn.setWrapText(true);
+            choiceBtn.setTextAlignment(TextAlignment.LEFT);
+
+            String btnColor = canUse ? "#00ff41" : "#333333";
+            choiceBtn.setStyle(
+                    "-fx-background-color: #0a0a0a;" +
+                            "-fx-text-fill: " + btnColor + ";" +
+                            "-fx-border-color: " + btnColor + ";" +
+                            "-fx-border-width: 1px;" +
+                            "-fx-padding: 8px;");
+            if (pixelFont != null)
+                choiceBtn.setFont(
+                        Font.font(pixelFont.getFamily(), 7));
+
+            choiceBtn.setOnAction(e -> {
+                GameController.DialogueResult result =
+                        controller.processChoice(npc.getId(), choice);
+                responseLabel.setText(result.response);
+                if (result.success) {
+                    responseLabel.setStyle(
+                            "-fx-text-fill: #00ff41;");
+                    if (result.discoveredClue != null) {
+                        showMessage("NUOVA PROVA: " +
+                                result.discoveredClue.getDescription());
+                    }
+                    if (result.experienceGained > 0) {
+                        showMessage("+" +
+                                result.experienceGained + " XP!");
+                    }
+                } else {
+                    responseLabel.setStyle(
+                            "-fx-text-fill: #ff4444;");
+                }
+                updateView();
+            });
+
+            choicesBox.getChildren().add(choiceBtn);
+        }
+
+        Button closeBtn = buildButton("[ CHIUDI ]", "#FFD700");
+        closeBtn.setOnAction(e -> dialogStage.close());
+
+        root.getChildren().addAll(
+                nameLabel, introLabel, charismaLabel,
+                new Separator(), choicesBox,
+                new Separator(), responseLabel, closeBtn);
+
+        Scene dialogScene = new Scene(root, 500, 600);
+        dialogScene.setFill(Color.BLACK);
+        dialogStage.setScene(dialogScene);
+        dialogStage.show();
+    }
+
+    private void showSimpleDialogue(NPC npc) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("CONTATTO SEGRETO");
-        alert.setHeaderText(
-                npc.getName().toUpperCase() + " | " + npc.getRole());
+        alert.setTitle("CONTATTO");
+        alert.setHeaderText(npc.getName().toUpperCase() +
+                " | " + npc.getRole());
         String dialogue = String.join("\n\n", npc.getDialogues());
         alert.setContentText(dialogue);
         alert.showAndWait();
-
-        npc.getCluesProvided().forEach(clue -> {
-            if (!clue.isDiscovered()) {
-                controller.collectClue(clue);
-                showMessage("NUOVA PROVA: " + clue.getDescription());
-            }
-        });
-
         updateView();
     }
 
@@ -421,16 +559,19 @@ public class GameView {
         if (controller.getJournalist().getReputation() >= 100) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("MISSIONE COMPIUTA!");
-            alert.setHeaderText("OPERAZIONE OMBRA - COMPLETATA");
+            alert.setHeaderText(
+                    "OPERAZIONE OMBRA - COMPLETATA");
             alert.setContentText(
                     "Hai smascherato la rete di spie!\n\n" +
                             "Il tuo rapporto ha raggiunto\n" +
                             "i vertici del governo.\n\n" +
-                            "La rete di spionaggio e' stata\n" +
-                            "neutralizzata!\n\n" +
                             "AGENTE " +
-                            controller.getJournalist().getName().toUpperCase() +
+                            controller.getJournalist()
+                                    .getName().toUpperCase() +
                             " - MISSIONE COMPLETATA!\n\n" +
+                            "LIVELLO: " +
+                            controller.getJournalist()
+                                    .getStats().getLevel() + "\n" +
                             "CREDIBILITA' FINALE: " +
                             controller.getJournalist().getReputation());
             alert.showAndWait();

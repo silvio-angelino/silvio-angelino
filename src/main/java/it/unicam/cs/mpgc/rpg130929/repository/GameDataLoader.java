@@ -8,6 +8,15 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
+/**
+ * Carica i dati di gioco dai file JSON presenti
+ * nella cartella resources.
+ * Segue il principio SRP caricando solo i dati,
+ * senza logica di gioco.
+ *
+ * @author Silvio Angelino
+ * @version 1.0
+ */
 public class GameDataLoader {
 
     private final Gson gson;
@@ -31,13 +40,19 @@ public class GameDataLoader {
                 new TypeToken<List<NpcData>>(){}.getType());
     }
 
+    public List<QuestData> loadQuests() {
+        return loadFromResources("quests.json",
+                new TypeToken<List<QuestData>>(){}.getType());
+    }
+
     private <T> T loadFromResources(String filename, Type type) {
         try (InputStream is = getClass().getClassLoader()
                 .getResourceAsStream(filename);
              InputStreamReader reader = new InputStreamReader(is)) {
             return gson.fromJson(reader, type);
         } catch (IOException e) {
-            throw new RuntimeException("Errore nel caricamento di " + filename, e);
+            throw new RuntimeException(
+                    "Errore nel caricamento di " + filename, e);
         }
     }
 
@@ -48,5 +63,22 @@ public class GameDataLoader {
         public String locationId;
         public List<String> dialogues;
         public List<String> clueIds;
+        public List<ChoiceData> choices;
+    }
+
+    public static class ChoiceData {
+        public String text;
+        public String response;
+        public int requiredCharisma;
+        public String clueId;
+        public int experienceReward;
+    }
+
+    public static class QuestData {
+        public String id;
+        public String title;
+        public String description;
+        public List<String> objectives;
+        public int experienceReward;
     }
 }

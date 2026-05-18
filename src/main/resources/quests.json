@@ -1,0 +1,45 @@
+[
+  {
+    "id": "q1",
+    "title": "OPERAZIONE OMBRA",
+    "description": "Smaschera la rete di spie straniere operante in citta'.",
+    "objectives": [
+      "Visita il Porto e raccogli prove",
+      "Parla con almeno 3 informatori",
+      "Scopri l'identita' del Corvo",
+      "Pubblica il rapporto finale"
+    ],
+    "experienceReward": 200
+  },
+  {
+    "id": "q2",
+    "title": "IL PORTO MISTERIOSO",
+    "description": "Indaga sulle strane attivita' notturne al porto.",
+    "objectives": [
+      "Trova 2 prove al porto",
+      "Parla con l'Agente Russo"
+    ],
+    "experienceReward": 100
+  },
+  {
+    "id": "q3",
+    "title": "VOCI DI MERCATO",
+    "description": "Raccogli informazioni al mercato nero.",
+    "objectives": [
+      "Parla con la Vecchia Carmela",
+      "Trova la mappa dei punti segreti"
+    ],
+    "experienceReward": 80
+  },
+  {
+    "id": "q4",
+    "title": "L'ULTIMO TRENO",
+    "description": "Il Corvo sta per fuggire dalla citta'!",
+    "objectives": [
+      "Raggiungi la stazione",
+      "Parla con il Portabagagli Nico",
+      "Raccogli le ultime prove"
+    ],
+    "experienceReward": 150
+  }
+]

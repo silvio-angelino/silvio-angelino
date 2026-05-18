@@ -7,8 +7,7 @@ import java.util.List;
 /**
  * Rappresenta il giornalista investigativo controllato dal giocatore.
  * Estende {@link GameCharacter} e gestisce il taccuino degli indizi,
- * gli articoli scritti e i luoghi visitati.
- * La reputazione aumenta ogni volta che viene pubblicato un articolo.
+ * gli articoli scritti, i luoghi visitati, le statistiche e le missioni.
  *
  * @author Silvio Angelino
  * @version 1.0
@@ -16,130 +15,112 @@ import java.util.List;
 public class Journalist extends GameCharacter {
 
     private int reputation;
+    private PlayerStats stats;
     private final List<Clue> notebook;
     private final List<Article> articles;
     private final List<Location> visitedLocations;
+    private final List<Quest> activeQuests;
+    private final List<Quest> completedQuests;
 
-    /**
-     * Costruttore vuoto necessario per la deserializzazione JSON.
-     */
     public Journalist() {
         super();
         this.notebook = new ArrayList<>();
         this.articles = new ArrayList<>();
         this.visitedLocations = new ArrayList<>();
+        this.activeQuests = new ArrayList<>();
+        this.completedQuests = new ArrayList<>();
+        this.stats = new PlayerStats();
     }
 
-    /**
-     * Costruisce un giornalista con il nome specificato.
-     *
-     * @param name il nome del giornalista
-     * @throws IllegalArgumentException se il nome è nullo o vuoto
-     */
     public Journalist(String name) {
-        super(name, "Giornalista");
+        super(name, "Agente Segreto");
         this.reputation = 0;
+        this.stats = new PlayerStats();
         this.notebook = new ArrayList<>();
         this.articles = new ArrayList<>();
         this.visitedLocations = new ArrayList<>();
+        this.activeQuests = new ArrayList<>();
+        this.completedQuests = new ArrayList<>();
     }
 
     @Override
     public void presentati() {
         System.out.println("Sono " + getName() +
-                ", giornalista investigativo.");
+                ", agente segreto sotto copertura.");
     }
 
-    /**
-     * Restituisce la reputazione attuale del giornalista.
-     *
-     * @return il valore della reputazione
-     */
     public int getReputation() { return reputation; }
+    public PlayerStats getStats() { return stats; }
 
-    /**
-     * Aggiunge un indizio al taccuino del giornalista.
-     * Se l'indizio non è già presente, viene aggiunto e marcato
-     * come scoperto.
-     *
-     * @param clue l'indizio da aggiungere
-     * @throws IllegalArgumentException se l'indizio è nullo
-     */
     public void addClueToNotebook(Clue clue) {
         if (clue == null)
             throw new IllegalArgumentException("Indizio non valido");
         if (!notebook.contains(clue)) {
             notebook.add(clue);
             clue.discover();
+            stats.addExperience(20);
         }
     }
 
-    /**
-     * Aggiunge un articolo alla lista degli articoli del giornalista.
-     *
-     * @param article l'articolo da aggiungere
-     * @throws IllegalArgumentException se l'articolo è nullo
-     */
     public void addArticle(Article article) {
         if (article == null)
             throw new IllegalArgumentException("Articolo non valido");
         if (!articles.contains(article)) articles.add(article);
     }
 
-    /**
-     * Pubblica un articolo e aggiorna la reputazione del giornalista.
-     *
-     * @param article l'articolo da pubblicare
-     * @throws IllegalArgumentException se l'articolo è nullo
-     */
     public void publishArticle(Article article) {
         if (article == null)
             throw new IllegalArgumentException("Articolo non valido");
         article.publish();
         reputation += article.getReputationValue();
+        stats.addExperience(50);
     }
 
-    /**
-     * Registra la visita a un luogo.
-     * Se il luogo non è già stato visitato, viene aggiunto
-     * alla lista e marcato come visitato.
-     *
-     * @param location il luogo da visitare
-     * @throws IllegalArgumentException se il luogo è nullo
-     */
     public void visitLocation(Location location) {
         if (location == null)
             throw new IllegalArgumentException("Luogo non valido");
         if (!visitedLocations.contains(location)) {
             visitedLocations.add(location);
             location.visit();
+            stats.addExperience(10);
         }
     }
 
-    /**
-     * Restituisce una vista non modificabile del taccuino.
-     *
-     * @return lista non modificabile degli indizi raccolti
-     */
+    public void addQuest(Quest quest) {
+        if (quest == null)
+            throw new IllegalArgumentException("Missione non valida");
+        if (!activeQuests.contains(quest))
+            activeQuests.add(quest);
+    }
+
+    public void completeQuest(Quest quest) {
+        if (quest == null)
+            throw new IllegalArgumentException("Missione non valida");
+        if (activeQuests.contains(quest)) {
+            activeQuests.remove(quest);
+            completedQuests.add(quest);
+            stats.addExperience(quest.getExperienceReward());
+            reputation += quest.getExperienceReward() / 10;
+        }
+    }
+
     public List<Clue> getNotebook() {
         return Collections.unmodifiableList(notebook);
     }
 
-    /**
-     * Restituisce una vista non modificabile degli articoli.
-     *
-     * @return lista non modificabile degli articoli scritti
-     */
     public List<Article> getArticles() {
         return Collections.unmodifiableList(articles);
     }
 
-    /**
-     * Restituisce una vista non modificabile dei luoghi visitati.
-     *
-     * @return lista non modificabile dei luoghi visitati
-     */
     public List<Location> getVisitedLocations() {
         return Collections.unmodifiableList(visitedLocations);
+    }
+
+    public List<Quest> getActiveQuests() {
+        return Collections.unmodifiableList(activeQuests);
+    }
+
+    public List<Quest> getCompletedQuests() {
+        return Collections.unmodifiableList(completedQuests);
     }
 }
