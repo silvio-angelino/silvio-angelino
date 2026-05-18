@@ -1,8 +1,10 @@
 package it.unicam.cs.mpgc.rpg130929.controller;
 
 import it.unicam.cs.mpgc.rpg130929.interfaces.GameRepository;
+import it.unicam.cs.mpgc.rpg130929.interfaces.ReputationCalculator;
 import it.unicam.cs.mpgc.rpg130929.model.*;
 import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
+import it.unicam.cs.mpgc.rpg130929.GameStats;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,6 +13,7 @@ public class GameController {
 
     private final GameRepository repository;
     private final GameDataLoader dataLoader;
+    private final ReputationCalculator reputationCalculator;
     private Journalist journalist;
     private final Map<String, Location> locations;
     private final Map<String, NPC> npcs;
@@ -21,6 +24,7 @@ public class GameController {
         if (repository == null) throw new IllegalArgumentException("Repository non valido");
         this.repository = repository;
         this.dataLoader = new GameDataLoader();
+        this.reputationCalculator = cluesCount -> cluesCount * 10;
         this.locations = new HashMap<>();
         this.npcs = new HashMap<>();
         this.clues = new HashMap<>();
@@ -125,5 +129,13 @@ public class GameController {
         return (int) clues.values().stream()
                 .filter(Clue::isDiscovered)
                 .count();
+    }
+
+    public int calculateReputation(int cluesCount) {
+        return reputationCalculator.calculate(cluesCount);
+    }
+
+    public GameStats getGameStats() {
+        return new GameStats(journalist);
     }
 }
