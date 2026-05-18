@@ -1,6 +1,10 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
-public class Clue {
+import it.unicam.cs.mpgc.rpg130929.interfaces.Describable;
+import it.unicam.cs.mpgc.rpg130929.interfaces.Discoverable;
+import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
+
+public class Clue implements Identifiable, Describable, Discoverable {
 
     private String id;
     private String description;
@@ -20,11 +24,19 @@ public class Clue {
         this.discovered = false;
     }
 
+    @Override
     public String getId() { return id; }
+
+    @Override
     public String getDescription() { return description; }
-    public String getLocationId() { return locationId; }
+
+    @Override
     public boolean isDiscovered() { return discovered; }
+
+    @Override
     public void discover() { this.discovered = true; }
+
+    public String getLocationId() { return locationId; }
 
     @Override
     public boolean equals(Object obj) {

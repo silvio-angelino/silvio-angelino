@@ -1,10 +1,13 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
+import it.unicam.cs.mpgc.rpg130929.interfaces.Describable;
+import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Location {
+public class Location implements Identifiable, Describable {
 
     private String id;
     private String name;
@@ -27,9 +30,14 @@ public class Location {
         this.visited = false;
     }
 
+    @Override
     public String getId() { return id; }
+
     public String getName() { return name; }
+
+    @Override
     public String getDescription() { return description; }
+
     public boolean isVisited() { return visited; }
     public void visit() { this.visited = true; }
 
