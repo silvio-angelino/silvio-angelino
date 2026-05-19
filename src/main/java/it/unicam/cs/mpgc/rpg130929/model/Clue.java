@@ -51,3 +51,5 @@ public class Clue implements Identifiable, Describable, Discoverable {
         return id != null ? id.hashCode() : 0;
     }
 }
+
+

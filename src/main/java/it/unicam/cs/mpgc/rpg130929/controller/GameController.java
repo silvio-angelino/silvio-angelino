@@ -31,6 +31,10 @@ public class GameController {
     private final Map<String, Quest> quests;
     private final Map<String, List<GameDataLoader.ChoiceData>> npcChoices;
     private Location currentLocation;
+    private int suspicionLevel;
+    private int daysRemaining;
+    private static final int MAX_SUSPICION = 100;
+    private static final int MAX_DAYS = 10;
 
     public GameController(GameRepository repository) {
         if (repository == null)
@@ -43,6 +47,8 @@ public class GameController {
         this.clues = new HashMap<>();
         this.quests = new HashMap<>();
         this.npcChoices = new HashMap<>();
+        this.suspicionLevel = 0;
+        this.daysRemaining = MAX_DAYS;
         initializeGame();
     }
 
@@ -116,7 +122,8 @@ public class GameController {
                 .collect(Collectors.toList());
     }
 
-    public List<GameDataLoader.ChoiceData> getChoicesForNpc(String npcId) {
+    public List<GameDataLoader.ChoiceData> getChoicesForNpc(
+            String npcId) {
         return npcChoices.getOrDefault(npcId, new ArrayList<>());
     }
 
@@ -126,6 +133,8 @@ public class GameController {
             throw new IllegalArgumentException("Luogo non trovato");
         currentLocation = location;
         journalist.visitLocation(location);
+        increaseSuspicion(5);
+        advanceDay();
         checkQuestObjectives();
     }
 
@@ -140,6 +149,7 @@ public class GameController {
         currentLocation.getClues().stream()
                 .filter(clue -> !clue.isDiscovered())
                 .forEach(this::collectClue);
+        increaseSuspicion(10);
     }
 
     public Clue getClueById(String clueId) {
@@ -152,12 +162,15 @@ public class GameController {
                 .canUseDialogueOption(choice.requiredCharisma);
 
         if (!canUse) {
+            increaseSuspicion(5);
             return new DialogueResult(false,
-                    "Il tuo carisma non e' sufficiente.",
+                    "Il tuo carisma non e' sufficiente. "
+                            + "L'NPC ti guarda con sospetto.",
                     null, 0);
         }
 
         journalist.getStats().addExperience(choice.experienceReward);
+        decreaseSuspicion(5);
 
         Clue discoveredClue = null;
         if (choice.clueId != null && !choice.clueId.isEmpty()) {
@@ -211,6 +224,7 @@ public class GameController {
 
     public void publishArticle(Article article) {
         journalist.publishArticle(article);
+        decreaseSuspicion(15);
         saveGame();
     }
 
@@ -246,6 +260,42 @@ public class GameController {
 
     public Collection<Quest> getCompletedQuests() {
         return journalist.getCompletedQuests();
+    }
+
+    public int getSuspicionLevel() { return suspicionLevel; }
+    public int getDaysRemaining() { return daysRemaining; }
+    public int getMaxSuspicion() { return MAX_SUSPICION; }
+    public int getMaxDays() { return MAX_DAYS; }
+
+    public void increaseSuspicion(int amount) {
+        this.suspicionLevel = Math.min(
+                suspicionLevel + amount, MAX_SUSPICION);
+    }
+
+    public void decreaseSuspicion(int amount) {
+        this.suspicionLevel = Math.max(
+                suspicionLevel - amount, 0);
+    }
+
+    public void advanceDay() {
+        if (daysRemaining > 0) daysRemaining--;
+    }
+
+    public boolean isGameOver() {
+        return suspicionLevel >= MAX_SUSPICION
+                || daysRemaining <= 0;
+    }
+
+    public boolean isVictory() {
+        return journalist.getReputation() >= 100;
+    }
+
+    public String getGameOverReason() {
+        if (suspicionLevel >= MAX_SUSPICION)
+            return "Le spie ti hanno scoperto!";
+        if (daysRemaining <= 0)
+            return "Il tempo e' scaduto!";
+        return "";
     }
 
     /**
