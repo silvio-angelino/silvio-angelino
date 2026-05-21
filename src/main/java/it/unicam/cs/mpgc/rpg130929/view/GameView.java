@@ -3,8 +3,6 @@ package it.unicam.cs.mpgc.rpg130929.view;
 import it.unicam.cs.mpgc.rpg130929.controller.GameController;
 import it.unicam.cs.mpgc.rpg130929.model.*;
 import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.util.List;
 
@@ -25,26 +22,26 @@ public class GameView {
     private final GameController controller;
     private final Stage stage;
     private Label locationLabel;
-    private Label descriptionLabel;
-    private ListView<String> cluesList;
-    private Label reputationLabel;
     private Label cluesCountLabel;
-    private Label statsLabel;
     private Label levelLabel;
-    private Label xpLabel;
     private Label daysLabel;
+    private Label objectiveLabel;
+    private Label statsLabel;
     private Canvas suspicionBar;
     private Canvas xpBar;
     private Canvas repBar;
+    private Label xpLabel;
+    private Label repLabel;
     private VBox npcPanel;
     private VBox questPanel;
     private VBox messageLog;
-    private ScrollPane messageScroll;
+    private ListView<String> cluesList;
     private MapView mapView;
+    private Button collectBtn;
     private Font pixelFont;
     private Font titleFont;
+    private Font bigFont;
 
-    // Palette sepia
     private static final String GOLD = "#c8a96e";
     private static final String DARK_GOLD = "#8B6914";
     private static final String BG_DARK = "#050200";
@@ -63,6 +60,9 @@ public class GameView {
         this.titleFont = Font.loadFont(
                 getClass().getClassLoader()
                         .getResourceAsStream("PressStart2P-Regular.ttf"), 10);
+        this.bigFont = Font.loadFont(
+                getClass().getClassLoader()
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 13);
     }
 
     public void show() {
@@ -84,8 +84,8 @@ public class GameView {
 
         mapView.getCanvas().requestFocus();
         updateView();
-        addMessage("Operazione Ombra iniziata. " +
-                "Hai " + controller.getDaysRemaining() +
+        addMessage("Operazione Ombra iniziata. Hai " +
+                controller.getDaysRemaining() +
                 " giorni per smascherare la rete di spie.");
     }
 
@@ -118,7 +118,6 @@ public class GameView {
         cluesCountLabel.setStyle("-fx-text-fill: " + GOLD + ";");
         if (pixelFont != null) cluesCountLabel.setFont(pixelFont);
 
-        // Barra sospetto nel top panel
         VBox suspicionBox = buildBarBox(
                 "SOSPETTO", 150, RED);
         suspicionBar = (Canvas) ((VBox) suspicionBox
@@ -130,46 +129,8 @@ public class GameView {
         return top;
     }
 
-    private VBox buildBarBox(String label,
-                             int width, String color) {
-        VBox box = new VBox(3);
-        box.setAlignment(Pos.CENTER_LEFT);
-
-        Label lbl = new Label(label);
-        lbl.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
-        if (pixelFont != null)
-            lbl.setFont(Font.font(pixelFont.getFamily(), 7));
-
-        Canvas bar = new Canvas(width, 10);
-        drawBar(bar.getGraphicsContext2D(),
-                0, width, color);
-
-        VBox barContainer = new VBox(bar);
-        barContainer.setStyle(
-                "-fx-border-color: " + color + ";" +
-                        "-fx-border-width: 1px;");
-
-        box.getChildren().addAll(lbl, barContainer);
-        return box;
-    }
-
-    private void drawBar(GraphicsContext gc,
-                         double value, double max, String color) {
-        double width = gc.getCanvas().getWidth();
-        double height = gc.getCanvas().getHeight();
-        double ratio = Math.min(value / max, 1.0);
-
-        gc.setFill(Color.web("#050200"));
-        gc.fillRect(0, 0, width, height);
-
-        if (ratio > 0) {
-            gc.setFill(Color.web(color));
-            gc.fillRect(0, 0, width * ratio, height);
-        }
-    }
-
     private VBox buildLeftPanel() {
-        VBox left = new VBox(10);
+        VBox left = new VBox(12);
         left.setPadding(new Insets(15));
         left.setPrefWidth(265);
         left.setStyle(
@@ -177,9 +138,8 @@ public class GameView {
                         "-fx-border-color: " + DARK_GOLD + ";" +
                         "-fx-border-width: 0 1 0 0;");
 
-        // Statistiche personaggio
+        // STATISTICHE AGENTE
         Label charTitle = buildTitle("[ AGENTE ]");
-
         statsLabel = new Label("");
         statsLabel.setStyle("-fx-text-fill: " + GOLD + ";");
         statsLabel.setWrapText(true);
@@ -187,69 +147,32 @@ public class GameView {
             statsLabel.setFont(
                     Font.font(pixelFont.getFamily(), 8));
 
-        // Barre XP e Reputazione
-        VBox xpBox = buildBarBox("ESPERIENZA", 200, "#4466cc");
-        xpBar = (Canvas) ((VBox) xpBox
-                .getChildren().get(1)).getChildren().get(0);
-
-        VBox repBox = buildBarBox("CREDIBILITA'", 200, DARK_GOLD);
-        repBar = (Canvas) ((VBox) repBox
-                .getChildren().get(1)).getChildren().get(0);
-
-        reputationLabel = new Label("0 / 100");
-        reputationLabel.setStyle(
-                "-fx-text-fill: " + DARK_GOLD + ";");
-        if (pixelFont != null)
-            reputationLabel.setFont(
-                    Font.font(pixelFont.getFamily(), 8));
-
         Separator sep1 = buildSeparator();
 
-        // Scenario
-        Label scenLabel = buildTitle("[ SCENARIO ]");
-        descriptionLabel = new Label("");
-        descriptionLabel.setStyle(
-                "-fx-text-fill: #a09060;");
-        descriptionLabel.setWrapText(true);
-        if (pixelFont != null)
-            descriptionLabel.setFont(
-                    Font.font(pixelFont.getFamily(), 8));
+        // OBIETTIVO — grande e prominente
+        Label objTitle = buildTitle("[ OBIETTIVO ]");
+        objectiveLabel = new Label("");
+        objectiveLabel.setStyle(
+                "-fx-text-fill: #ffcc44;" +
+                        "-fx-background-color: #1a0800;" +
+                        "-fx-border-color: #ffcc44;" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-padding: 12px;");
+        objectiveLabel.setWrapText(true);
+        objectiveLabel.setMaxWidth(230);
+        if (bigFont != null)
+            objectiveLabel.setFont(bigFont);
 
         Separator sep2 = buildSeparator();
 
-        // Contatti
+        // CONTATTI
         Label npcTitle = buildTitle("[ CONTATTI ]");
         npcPanel = new VBox(6);
 
-        Separator sep3 = buildSeparator();
-
-        Button collectBtn = buildButton(
-                "[ CERCA PROVE ]", GOLD);
-        collectBtn.setOnAction(e -> {
-            int before = controller.getDiscoveredCluesCount();
-            controller.collectAllCluesInCurrentLocation();
-            int after = controller.getDiscoveredCluesCount();
-            int found = after - before;
-            if (found > 0) {
-                addMessage("Trovate " + found +
-                        " prove in " +
-                        controller.getCurrentLocation()
-                                .getName() + "!");
-            } else {
-                addMessage("Nessuna nuova prova in " +
-                        controller.getCurrentLocation()
-                                .getName() + ".");
-            }
-            updateView();
-            mapView.getCanvas().requestFocus();
-            checkGameState();
-        });
-
         left.getChildren().addAll(
-                charTitle, statsLabel, xpBox, repBox,
-                reputationLabel, sep1, scenLabel,
-                descriptionLabel, sep2, npcTitle,
-                npcPanel, sep3, collectBtn);
+                charTitle, statsLabel, sep1,
+                objTitle, objectiveLabel, sep2,
+                npcTitle, npcPanel);
         return left;
     }
 
@@ -271,17 +194,64 @@ public class GameView {
             checkGameState();
         });
 
+        // BARRE XP E CREDIBILITA' sotto la mappa
+        HBox barsBox = new HBox(20);
+        barsBox.setAlignment(Pos.CENTER);
+        barsBox.setPadding(new Insets(5, 0, 5, 0));
+
+        VBox xpBox = buildBarBox("ESPERIENZA", 250, "#4466cc");
+        xpBar = (Canvas) ((VBox) xpBox
+                .getChildren().get(1)).getChildren().get(0);
+        xpLabel = new Label("0 XP");
+        xpLabel.setStyle("-fx-text-fill: #4466cc;");
+        if (pixelFont != null)
+            xpLabel.setFont(Font.font(pixelFont.getFamily(), 7));
+        xpBox.getChildren().add(xpLabel);
+
+        VBox repBox = buildBarBox("CREDIBILITA'", 250, DARK_GOLD);
+        repBar = (Canvas) ((VBox) repBox
+                .getChildren().get(1)).getChildren().get(0);
+        repLabel = new Label("0 / 100");
+        repLabel.setStyle("-fx-text-fill: " + DARK_GOLD + ";");
+        if (pixelFont != null)
+            repLabel.setFont(Font.font(pixelFont.getFamily(), 7));
+        repBox.getChildren().add(repLabel);
+
+        barsBox.getChildren().addAll(xpBox, repBox);
+
+        // PULSANTE OTTIENI PROVE — appare solo se ci sono prove
+        collectBtn = buildButton("[ OTTIENI PROVE ]", GOLD);
+        collectBtn.setVisible(false);
+        collectBtn.setOnAction(e -> {
+            int before = controller.getDiscoveredCluesCount();
+            controller.collectAllCluesInCurrentLocation();
+            int after = controller.getDiscoveredCluesCount();
+            int found = after - before;
+            if (found > 0) {
+                addMessage("Trovate " + found +
+                        " prove in " +
+                        controller.getCurrentLocation()
+                                .getName() + "!");
+            } else {
+                addMessage("Nessuna nuova prova qui.");
+            }
+            updateView();
+            mapView.getCanvas().requestFocus();
+            checkGameState();
+        });
+
+        // TASTI MOVIMENTO
         HBox controls = new HBox(8);
         controls.setAlignment(Pos.CENTER);
         controls.getChildren().addAll(
                 buildKeyLabel("W"), buildKeyLabel("A"),
                 buildKeyLabel("S"), buildKeyLabel("D"),
                 buildKeyLabel("↑"), buildKeyLabel("↓"),
-                buildKeyLabel("←"), buildKeyLabel("→")
-        );
+                buildKeyLabel("←"), buildKeyLabel("→"));
 
         center.getChildren().addAll(
-                mapTitle, mapView.getCanvas(), controls);
+                mapTitle, mapView.getCanvas(),
+                controls, barsBox, collectBtn);
         return center;
     }
 
@@ -296,8 +266,7 @@ public class GameView {
 
         Label dossierTitle = buildTitle("[ DOSSIER ]");
 
-        Label dossierHint = new Label(
-                "Prove raccolte:");
+        Label dossierHint = new Label("Prove raccolte:");
         dossierHint.setStyle(
                 "-fx-text-fill: " + TEXT_DIM + ";");
         if (pixelFont != null)
@@ -349,7 +318,7 @@ public class GameView {
         messageLog.setStyle(
                 "-fx-background-color: " + BG_PANEL + ";");
 
-        messageScroll = new ScrollPane(messageLog);
+        ScrollPane messageScroll = new ScrollPane(messageLog);
         messageScroll.setPrefHeight(70);
         messageScroll.setStyle(
                 "-fx-background-color: " + BG_PANEL + ";" +
@@ -364,16 +333,50 @@ public class GameView {
         return bottom;
     }
 
+    private VBox buildBarBox(String label,
+                             int width, String color) {
+        VBox box = new VBox(3);
+        box.setAlignment(Pos.CENTER_LEFT);
+
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
+        if (pixelFont != null)
+            lbl.setFont(Font.font(pixelFont.getFamily(), 7));
+
+        Canvas bar = new Canvas(width, 10);
+        drawBar(bar.getGraphicsContext2D(), 0, width, color);
+
+        VBox barContainer = new VBox(bar);
+        barContainer.setStyle(
+                "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 1px;");
+
+        box.getChildren().addAll(lbl, barContainer);
+        return box;
+    }
+
+    private void drawBar(GraphicsContext gc,
+                         double value, double max, String color) {
+        double width = gc.getCanvas().getWidth();
+        double height = gc.getCanvas().getHeight();
+        double ratio = Math.min(value / max, 1.0);
+
+        gc.setFill(Color.web("#050200"));
+        gc.fillRect(0, 0, width, height);
+
+        if (ratio > 0) {
+            gc.setFill(Color.web(color));
+            gc.fillRect(0, 0, width * ratio, height);
+        }
+    }
+
     private void addMessage(String text) {
         Label msg = new Label("> " + text);
         msg.setStyle("-fx-text-fill: " + GOLD + ";");
         if (pixelFont != null)
             msg.setFont(Font.font(pixelFont.getFamily(), 8));
         msg.setWrapText(true);
-
         messageLog.getChildren().add(0, msg);
-
-        // Mantieni solo gli ultimi 5 messaggi
         while (messageLog.getChildren().size() > 5) {
             messageLog.getChildren().remove(
                     messageLog.getChildren().size() - 1);
@@ -438,9 +441,9 @@ public class GameView {
         Location current = controller.getCurrentLocation();
         locationLabel.setText(
                 current.getName().toUpperCase());
-        descriptionLabel.setText(current.getDescription());
 
-        PlayerStats stats = controller.getJournalist().getStats();
+        PlayerStats stats =
+                controller.getJournalist().getStats();
         levelLabel.setText("LV." + stats.getLevel());
         statsLabel.setText(
                 "INT: " + stats.getIntelligence() +
@@ -449,23 +452,26 @@ public class GameView {
                         "   XP: " + stats.getExperience());
 
         int rep = controller.getJournalist().getReputation();
-        reputationLabel.setText(rep + " / 100");
 
         daysLabel.setText(
                 "GIORNI: " + controller.getDaysRemaining());
 
-        // Aggiorna colore giorni
         if (controller.getDaysRemaining() <= 3) {
             daysLabel.setStyle("-fx-text-fill: #cc3300;");
         } else if (controller.getDaysRemaining() <= 5) {
             daysLabel.setStyle("-fx-text-fill: #cc8800;");
         } else {
-            daysLabel.setStyle("-fx-text-fill: " + GOLD + ";");
+            daysLabel.setStyle(
+                    "-fx-text-fill: " + GOLD + ";");
         }
 
         cluesCountLabel.setText(
                 "PROVE: " + controller.getDiscoveredCluesCount() +
                         "/" + controller.getTotalClues());
+
+        // Aggiorna obiettivo
+        objectiveLabel.setText(
+                controller.getCurrentObjective());
 
         // Aggiorna barre
         drawBar(suspicionBar.getGraphicsContext2D(),
@@ -475,9 +481,22 @@ public class GameView {
         drawBar(xpBar.getGraphicsContext2D(),
                 stats.getExperience(),
                 stats.getLevel() * 100, "#4466cc");
+        xpLabel.setText(stats.getExperience() +
+                " / " + (stats.getLevel() * 100) + " XP");
 
         drawBar(repBar.getGraphicsContext2D(),
                 rep, 100, DARK_GOLD);
+        repLabel.setText(rep + " / 100");
+
+        // Mostra/nascondi pulsante OTTIENI PROVE
+        boolean hasUndiscoveredClues = current.getClues()
+                .stream()
+                .anyMatch(clue -> !clue.isDiscovered());
+        collectBtn.setVisible(hasUndiscoveredClues);
+        if (hasUndiscoveredClues) {
+            collectBtn.setText("[ OTTIENI PROVE IN " +
+                    current.getName().toUpperCase() + " ]");
+        }
 
         // Aggiorna lista prove
         cluesList.getItems().clear();
@@ -520,7 +539,8 @@ public class GameView {
         });
 
         if (controller.getNpcsInCurrentLocation().isEmpty()) {
-            Label noNpc = new Label("// nessun contatto //");
+            Label noNpc = new Label(
+                    "// nessun contatto qui //");
             noNpc.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
             if (pixelFont != null)
                 noNpc.setFont(
@@ -528,9 +548,7 @@ public class GameView {
             npcPanel.getChildren().add(noNpc);
         }
 
-        // Aggiorna missioni
         updateQuestPanel();
-
         if (mapView != null) mapView.refresh();
     }
 
@@ -554,7 +572,6 @@ public class GameView {
                 questTitle.setFont(
                         Font.font(pixelFont.getFamily(), 7));
 
-            // Barra progresso missione
             Canvas questBar = new Canvas(200, 6);
             drawBar(questBar.getGraphicsContext2D(),
                     quest.getCompletedObjectivesCount(),
@@ -672,14 +689,16 @@ public class GameView {
             if (canUse) {
                 choiceBtn.setOnMouseEntered(e ->
                         choiceBtn.setStyle(
-                                "-fx-background-color: " + DARK_GOLD + ";" +
+                                "-fx-background-color: " +
+                                        DARK_GOLD + ";" +
                                         "-fx-text-fill: " + BG_DARK + ";" +
                                         "-fx-border-color: " + DARK_GOLD + ";" +
                                         "-fx-border-width: 1px;" +
                                         "-fx-padding: 8px;"));
                 choiceBtn.setOnMouseExited(e ->
                         choiceBtn.setStyle(
-                                "-fx-background-color: " + BG_PANEL2 + ";" +
+                                "-fx-background-color: " +
+                                        BG_PANEL2 + ";" +
                                         "-fx-text-fill: " + color + ";" +
                                         "-fx-border-color: " + color + ";" +
                                         "-fx-border-width: 1px;" +

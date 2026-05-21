@@ -187,9 +187,8 @@ public class GameController {
     }
 
     private void checkQuestObjectives() {
-        journalist.getActiveQuests().forEach(quest -> {
-            updateQuestProgress(quest);
-        });
+        journalist.getActiveQuests().forEach(
+                this::updateQuestProgress);
     }
 
     private void updateQuestProgress(Quest quest) {
@@ -296,6 +295,38 @@ public class GameController {
         if (daysRemaining <= 0)
             return "Il tempo e' scaduto!";
         return "";
+    }
+
+    public String getCurrentObjective() {
+        int clues = getDiscoveredCluesCount();
+        int npcsContacted = (int) npcs.values().stream()
+                .filter(npc -> npc.getCluesProvided().stream()
+                        .anyMatch(Clue::isDiscovered))
+                .count();
+        int rep = journalist.getReputation();
+
+        if (clues == 0) {
+            return "OBIETTIVO:\nSpostati in un luogo\n" +
+                    "e cerca prove!";
+        } else if (clues < 3) {
+            return "OBIETTIVO:\nRaccogli ancora prove!\n" +
+                    "(" + clues + "/3 trovate)";
+        } else if (npcsContacted < 2) {
+            return "OBIETTIVO:\nParla con i contatti!\n" +
+                    "(" + npcsContacted + "/2 contattati)";
+        } else if (clues < 5) {
+            return "OBIETTIVO:\nRaccogli altre prove!\n" +
+                    "(" + clues + "/5 trovate)";
+        } else if (rep == 0) {
+            return "OBIETTIVO:\nHai abbastanza prove!\n" +
+                    "Scrivi il rapporto finale!";
+        } else if (rep < 100) {
+            return "OBIETTIVO:\nContinua a raccogliere\n" +
+                    "prove e pubblica rapporti!\n" +
+                    "(" + rep + "/100 credibilita')";
+        } else {
+            return "MISSIONE COMPLETATA!";
+        }
     }
 
     /**
