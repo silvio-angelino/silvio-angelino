@@ -1,12 +1,13 @@
-# 🕵️ Il Cronista - Operazione Ombra
+# Il Cronista - Operazione Ombra
 
 Gioco di ruolo investigativo ambientato nel 1935.
-Sei un giornalista infiltrato che deve smascherare
-una rete di spie straniere operante in città.
+Sei un agente segreto sotto copertura che deve
+smascherare una rete di spie straniere prima che
+il tempo scada.
 
 ---
 
-## 🚀 Come eseguire il progetto
+## Come eseguire il progetto
 
 ### Prerequisiti
 - Java 25 (LTS)
@@ -31,35 +32,38 @@ cd il-cronista
 
 ---
 
-## 🎮 Come si gioca
+## Come si gioca
 
-- **WASD** — Muovi il personaggio sulla mappa
-- **CERCA PROVE** — Raccogli indizi nel luogo corrente
-- **Parla con i CONTATTI** — Ottieni informazioni dai personaggi
-- **SCRIVI RAPPORTO** — Pubblica un articolo con gli indizi raccolti
-- **Obiettivo** — Raggiungi 100 di credibilità per completare la missione
-
----
-
-## 🤖 Uso di strumenti di AI
-
-Utilizzato **Claude (Anthropic)** come assistente AI per:
-
-- Supporto nella progettazione dell'architettura MVC
-- Suggerimenti sulla struttura delle classi e interfacce
-- Spiegazione e applicazione dei principi SOLID e Clean Code
-- Supporto nella configurazione di Gradle e JavaFX
-- Generazione di porzioni di codice, successivamente
-  comprese e adattate personalmente
-
-Per una descrizione dettagliata dell'uso dell'AI,
-consultare la **Wiki del repository**.
+- **WASD / Frecce** — Muovi il personaggio sulla mappa
+- **OTTIENI PROVE** — Appare automaticamente quando
+  sei in un luogo con prove disponibili
+- **Parla con i CONTATTI** — Clicca sui personaggi
+  per ottenere informazioni
+- **PUBBLICA ARTICOLO** — Quando hai abbastanza prove
+  scrivi il rapporto finale
+- **Obiettivo** — Raggiungi 100 di credibilità
+  entro 10 giorni senza essere scoperto
 
 ---
 
-## 📦 Tecnologie utilizzate
+## Tecnologie utilizzate
 
 - Java 25
 - JavaFX 24
 - Gson 2.13.2
 - Gradle
+
+---
+
+## Uso di strumenti di AI
+
+Utilizzato **Claude (Anthropic)** come assistente AI per:
+
+- Supporto nella progettazione dell'architettura MVC
+- Spiegazione e applicazione dei principi SOLID
+- Supporto nella configurazione di Gradle e JavaFX
+- Generazione di porzioni di codice, successivamente
+  comprese e adattate personalmente
+
+Per una descrizione dettagliata consultare la
+**Wiki del repository**.
