@@ -17,7 +17,7 @@
     "id": "ambasciata",
     "name": "Ambasciata",
     "description": "L'ambasciata straniera pullula di diplomatici sospetti. Ogni finestra nasconde occhi indiscreti.",
-    "x": 8,
+    "x": 9,
     "y": 2
   },
   {
@@ -31,14 +31,14 @@
     "id": "osteria",
     "name": "Osteria dei Segreti",
     "description": "Ritrovo di spie e informatori. Il vino scorre e con esso anche i segreti piu' pericolosi.",
-    "x": 7,
+    "x": 8,
     "y": 7
   },
   {
     "id": "stazione",
     "name": "Stazione Ferroviaria",
     "description": "Agenti segreti arrivano e partono ogni giorno. Le valigie contengono piu' segreti che vestiti.",
-    "x": 9,
+    "x": 10,
     "y": 5
   }
 ]
