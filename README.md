@@ -5,6 +5,9 @@ Sei un agente segreto sotto copertura che deve
 smascherare una rete di spie straniere prima che
 il tempo scada.
 
+**Package:** `it.unicam.cs.mpgc.rpg130929`
+**Matricola:** 130929
+
 ---
 
 ## Come eseguire il progetto
@@ -39,10 +42,12 @@ cd il-cronista
   sei in un luogo con prove disponibili
 - **Parla con i CONTATTI** — Clicca sui personaggi
   per ottenere informazioni
-- **PUBBLICA ARTICOLO** — Quando hai abbastanza prove
+- **SCRIVI RAPPORTO** — Quando hai abbastanza prove
   scrivi il rapporto finale
 - **Obiettivo** — Raggiungi 100 di credibilità
   entro 10 giorni senza essere scoperto
+- **Attenzione** — Evita che il sospetto raggiunga
+  100 o la missione fallirà!
 
 ---
 
@@ -64,6 +69,7 @@ Utilizzato **Claude (Anthropic)** come assistente AI per:
 - Supporto nella configurazione di Gradle e JavaFX
 - Generazione di porzioni di codice, successivamente
   comprese e adattate personalmente
+- Revisione e miglioramento dello stile del codice
 
 Per una descrizione dettagliata consultare la
 **Wiki del repository**.
