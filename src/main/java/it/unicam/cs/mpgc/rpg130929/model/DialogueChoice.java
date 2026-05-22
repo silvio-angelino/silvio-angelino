@@ -1,21 +1,16 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
-/**
- * Rappresenta una scelta in un dialogo con un NPC.
- * Ogni scelta può richiedere un livello minimo di carisma
- * e può fornire indizi o esperienza al giocatore.
- *
- * @author Silvio Angelino
- * @version 1.0
- */
+// rappresenta una delle scelte disponibili nel dialogo con un NPC
+// alcune scelte richiedono un carisma minimo per essere usate
 public class DialogueChoice {
 
-    private final String text;
-    private final String response;
-    private final int requiredCharisma;
-    private final String clueId;
-    private final int experienceReward;
+    private String text;
+    private String response;
+    private int requiredCharisma;
+    private String clueId;
+    private int experienceReward;
 
+    // costruttore vuoto per Gson
     public DialogueChoice() {
         this.text = "";
         this.response = "";
@@ -29,8 +24,6 @@ public class DialogueChoice {
                           int experienceReward) {
         if (text == null || text.isEmpty())
             throw new IllegalArgumentException("Testo non valido");
-        if (response == null || response.isEmpty())
-            throw new IllegalArgumentException("Risposta non valida");
         this.text = text;
         this.response = response;
         this.requiredCharisma = requiredCharisma;
@@ -39,11 +32,16 @@ public class DialogueChoice {
     }
 
     public String getText() { return text; }
+
     public String getResponse() { return response; }
+
     public int getRequiredCharisma() { return requiredCharisma; }
+
     public String getClueId() { return clueId; }
+
     public int getExperienceReward() { return experienceReward; }
 
+    // controlla se questa scelta fornisce un indizio
     public boolean hasClue() {
         return clueId != null && !clueId.isEmpty();
     }

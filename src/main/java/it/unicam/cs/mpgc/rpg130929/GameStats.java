@@ -6,21 +6,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// classe di utilità per le statistiche del gioco
+// usa le Stream API per fare calcoli sui dati
 public class GameStats {
 
     private final Journalist journalist;
 
     public GameStats(Journalist journalist) {
-        if (journalist == null) throw new IllegalArgumentException("Giornalista non valido");
+        if (journalist == null)
+            throw new IllegalArgumentException("Giornalista non valido");
         this.journalist = journalist;
     }
 
+    // conta quanti indizi sono stati scoperti
     public long countDiscoveredClues() {
         return journalist.getNotebook().stream()
                 .filter(Clue::isDiscovered)
                 .count();
     }
 
+    // somma la reputazione di tutti gli articoli pubblicati
     public int calculateTotalReputation() {
         return journalist.getArticles().stream()
                 .filter(Article::isPublished)
@@ -34,9 +39,11 @@ public class GameStats {
                 .collect(Collectors.toList());
     }
 
+    // raggruppa gli indizi in scoperti e non scoperti
     public Map<Boolean, List<Clue>> groupCluesByDiscovery() {
         return journalist.getNotebook().stream()
-                .collect(Collectors.partitioningBy(Clue::isDiscovered));
+                .collect(Collectors.partitioningBy(
+                        Clue::isDiscovered));
     }
 
     public boolean hasEnoughCluesForArticle(int minClues) {
@@ -46,15 +53,11 @@ public class GameStats {
     }
 
     public String getSummary() {
-        return String.format(
-                "Giornalista: %s\n" +
-                        "Indizi raccolti: %d\n" +
-                        "Articoli pubblicati: %d\n" +
-                        "Reputazione totale: %d",
-                journalist.getName(),
-                countDiscoveredClues(),
-                getPublishedArticles().size(),
-                calculateTotalReputation()
-        );
+        return "Giornalista: " + journalist.getName() + "\n" +
+                "Indizi raccolti: " + countDiscoveredClues() + "\n" +
+                "Articoli pubblicati: " +
+                getPublishedArticles().size() + "\n" +
+                "Reputazione totale: " +
+                calculateTotalReputation();
     }
 }

@@ -4,6 +4,7 @@ import it.unicam.cs.mpgc.rpg130929.interfaces.Describable;
 import it.unicam.cs.mpgc.rpg130929.interfaces.Discoverable;
 import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
 
+// un indizio che il giornalista può raccogliere
 public class Clue implements Identifiable, Describable, Discoverable {
 
     private String id;
@@ -11,13 +12,16 @@ public class Clue implements Identifiable, Describable, Discoverable {
     private String locationId;
     private boolean discovered;
 
+    // serve a Gson
     public Clue() {
         this.discovered = false;
     }
 
     public Clue(String id, String description, String locationId) {
-        if (id == null || id.isEmpty()) throw new IllegalArgumentException("Id non valido");
-        if (description == null || description.isEmpty()) throw new IllegalArgumentException("Descrizione non valida");
+        if (id == null || id.isEmpty())
+            throw new IllegalArgumentException("Id non valido");
+        if (description == null || description.isEmpty())
+            throw new IllegalArgumentException("Descrizione non valida");
         this.id = id;
         this.description = description;
         this.locationId = locationId;
@@ -33,16 +37,18 @@ public class Clue implements Identifiable, Describable, Discoverable {
     @Override
     public boolean isDiscovered() { return discovered; }
 
+    // segna l'indizio come trovato
     @Override
-    public void discover() { this.discovered = true; }
+    public void discover() {
+        this.discovered = true;
+    }
 
     public String getLocationId() { return locationId; }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Clue)) return false;
-        Clue other = (Clue) obj;
+        if (!(obj instanceof Clue other)) return false;
         return this.id != null && this.id.equals(other.id);
     }
 
@@ -51,5 +57,3 @@ public class Clue implements Identifiable, Describable, Discoverable {
         return id != null ? id.hashCode() : 0;
     }
 }
-
-

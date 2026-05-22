@@ -1,15 +1,7 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
-/**
- * Rappresenta le statistiche del personaggio giocante.
- * Le statistiche influenzano le meccaniche di gioco:
- * - Intelligenza: influenza le prove trovate
- * - Carisma: influenza i dialoghi con gli NPC
- * - Furtivita': influenza l'accesso ai luoghi segreti
- *
- * @author Silvio Angelino
- * @version 1.0
- */
+// statistiche RPG del personaggio
+// queste influenzano cosa puoi fare nel gioco
 public class PlayerStats {
 
     private int intelligence;
@@ -17,6 +9,8 @@ public class PlayerStats {
     private int stealth;
     private int level;
     private int experience;
+
+    // ogni livello richiede 100 XP
     private static final int XP_PER_LEVEL = 100;
 
     public PlayerStats() {
@@ -37,13 +31,7 @@ public class PlayerStats {
         return (level * XP_PER_LEVEL) - experience;
     }
 
-    /**
-     * Aggiunge esperienza al personaggio.
-     * Se l'esperienza raggiunge il limite, il personaggio
-     * sale di livello e le statistiche aumentano.
-     *
-     * @param amount la quantità di esperienza da aggiungere
-     */
+    // aggiunge XP e controlla se si sale di livello
     public void addExperience(int amount) {
         if (amount <= 0) return;
         this.experience += amount;
@@ -53,39 +41,27 @@ public class PlayerStats {
     }
 
     private void levelUp() {
-        this.level++;
-        this.intelligence++;
-        this.charisma++;
-        this.stealth++;
+        level++;
+        intelligence++;
+        charisma++;
+        stealth++;
+        System.out.println("Livello aumentato! Ora sei LV." + level);
     }
 
-    /**
-     * Verifica se il personaggio puo' accedere
-     * a un luogo segreto in base alla furtivita'.
-     *
-     * @param requiredStealth la furtivita' richiesta
-     * @return true se il personaggio puo' accedere
-     */
+    // usato per controllare se puoi accedere a certi luoghi
     public boolean canAccess(int requiredStealth) {
-        return this.stealth >= requiredStealth;
+        return stealth >= requiredStealth;
     }
 
-    /**
-     * Verifica se il personaggio puo' usare
-     * una opzione di dialogo in base al carisma.
-     *
-     * @param requiredCharisma il carisma richiesto
-     * @return true se il personaggio puo' usare l'opzione
-     */
+    // usato per controllare le opzioni di dialogo disponibili
     public boolean canUseDialogueOption(int requiredCharisma) {
-        return this.charisma >= requiredCharisma;
+        return charisma >= requiredCharisma;
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "LV.%d | INT:%d | CAR:%d | FUR:%d | XP:%d/%d",
-                level, intelligence, charisma, stealth,
-                experience, level * XP_PER_LEVEL);
+        return "LV." + level + " | INT:" + intelligence +
+                " | CAR:" + charisma + " | FUR:" + stealth +
+                " | XP:" + experience + "/" + (level * XP_PER_LEVEL);
     }
 }

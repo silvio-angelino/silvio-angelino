@@ -1,15 +1,16 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+// personaggio non giocante con cui il giornalista può parlare
 public class NPC extends GameCharacter {
 
     private String id;
     private List<String> dialogues;
     private List<Clue> cluesProvided;
 
+    // serve a Gson
     public NPC() {
         super();
         this.dialogues = new ArrayList<>();
@@ -27,39 +28,35 @@ public class NPC extends GameCharacter {
 
     @Override
     public void presentati() {
-        System.out.println("Sono " + getName() + ", " + getRole() + ".");
+        System.out.println("Sono " + getName() +
+                ", " + getRole() + ".");
     }
 
     public String getId() { return id; }
 
     public void addDialogue(String dialogue) {
-        if (dialogue == null || dialogue.isEmpty())
-            throw new IllegalArgumentException("Dialogo non valido");
-        if (dialogues == null) dialogues = new ArrayList<>();
+        if (dialogue == null || dialogue.isEmpty()) return;
         dialogues.add(dialogue);
     }
 
     public void addClue(Clue clue) {
         if (clue == null) return;
-        if (cluesProvided == null) cluesProvided = new ArrayList<>();
-        if (!cluesProvided.contains(clue)) cluesProvided.add(clue);
+        if (!cluesProvided.contains(clue))
+            cluesProvided.add(clue);
     }
 
     public List<String> getDialogues() {
-        if (dialogues == null) dialogues = new ArrayList<>();
-        return Collections.unmodifiableList(dialogues);
+        return dialogues;
     }
 
     public List<Clue> getCluesProvided() {
-        if (cluesProvided == null) cluesProvided = new ArrayList<>();
-        return Collections.unmodifiableList(cluesProvided);
+        return cluesProvided;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof NPC)) return false;
-        NPC other = (NPC) obj;
+        if (!(obj instanceof NPC other)) return false;
         return this.id != null && this.id.equals(other.id);
     }
 

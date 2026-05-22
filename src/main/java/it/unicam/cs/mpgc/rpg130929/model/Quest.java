@@ -1,34 +1,23 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-/**
- * Rappresenta una missione del gioco.
- * Le missioni hanno obiettivi da completare e
- * ricompense in esperienza.
- *
- * @author Silvio Angelino
- * @version 1.0
- */
+// rappresenta una missione con obiettivi da completare
 public class Quest {
 
-    private final String id;
-    private final String title;
-    private final String description;
-    private final List<String> objectives;
-    private final List<Boolean> completedObjectives;
-    private final int experienceReward;
+    private String id;
+    private String title;
+    private String description;
+    private List<String> objectives;
+    private List<Boolean> completedObjectives;
+    private int experienceReward;
     private boolean completed;
 
+    // serve a Gson
     public Quest() {
-        this.id = null;
-        this.title = null;
-        this.description = null;
         this.objectives = new ArrayList<>();
         this.completedObjectives = new ArrayList<>();
-        this.experienceReward = 0;
         this.completed = false;
     }
 
@@ -42,12 +31,14 @@ public class Quest {
         this.title = title;
         this.description = description;
         this.objectives = new ArrayList<>(objectives);
-        this.completedObjectives = new ArrayList<>();
-        for (int i = 0; i < objectives.size(); i++) {
-            this.completedObjectives.add(false);
-        }
         this.experienceReward = experienceReward;
         this.completed = false;
+
+        // inizializzo tutti gli obiettivi come non completati
+        this.completedObjectives = new ArrayList<>();
+        for (int i = 0; i < objectives.size(); i++) {
+            completedObjectives.add(false);
+        }
     }
 
     public String getId() { return id; }
@@ -57,16 +48,10 @@ public class Quest {
     public boolean isCompleted() { return completed; }
 
     public List<String> getObjectives() {
-        return Collections.unmodifiableList(objectives);
+        return objectives;
     }
 
-    /**
-     * Completa un obiettivo della missione.
-     * Se tutti gli obiettivi sono completati,
-     * la missione viene marcata come completata.
-     *
-     * @param index l'indice dell'obiettivo da completare
-     */
+    // segna un obiettivo come completato
     public void completeObjective(int index) {
         if (index >= 0 && index < completedObjectives.size()) {
             completedObjectives.set(index, true);
@@ -81,6 +66,7 @@ public class Quest {
         return false;
     }
 
+    // controlla se tutti gli obiettivi sono completati
     private void checkCompletion() {
         completed = completedObjectives.stream()
                 .allMatch(Boolean::booleanValue);

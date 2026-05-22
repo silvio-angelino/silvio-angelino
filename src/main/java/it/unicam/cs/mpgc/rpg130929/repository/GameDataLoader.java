@@ -1,22 +1,14 @@
 package it.unicam.cs.mpgc.rpg130929.repository;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.unicam.cs.mpgc.rpg130929.model.*;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.List;
 
-/**
- * Carica i dati di gioco dai file JSON presenti
- * nella cartella resources.
- * Segue il principio SRP caricando solo i dati,
- * senza logica di gioco.
- *
- * @author Silvio Angelino
- * @version 1.0
- */
+// si occupa di caricare i dati dai file JSON in resources
 public class GameDataLoader {
 
     private final Gson gson;
@@ -45,10 +37,12 @@ public class GameDataLoader {
                 new TypeToken<List<QuestData>>(){}.getType());
     }
 
+    // metodo generico per caricare qualsiasi file JSON
     private <T> T loadFromResources(String filename, Type type) {
         try (InputStream is = getClass().getClassLoader()
                 .getResourceAsStream(filename);
-             InputStreamReader reader = new InputStreamReader(is)) {
+             InputStreamReader reader =
+                     new InputStreamReader(is)) {
             return gson.fromJson(reader, type);
         } catch (IOException e) {
             throw new RuntimeException(
@@ -56,6 +50,7 @@ public class GameDataLoader {
         }
     }
 
+    // dati grezzi NPC letti dal JSON
     public static class NpcData {
         public String id;
         public String name;
@@ -66,6 +61,7 @@ public class GameDataLoader {
         public List<ChoiceData> choices;
     }
 
+    // dati di una singola scelta di dialogo
     public static class ChoiceData {
         public String text;
         public String response;
@@ -74,6 +70,7 @@ public class GameDataLoader {
         public int experienceReward;
     }
 
+    // dati grezzi missione letti dal JSON
     public static class QuestData {
         public String id;
         public String title;

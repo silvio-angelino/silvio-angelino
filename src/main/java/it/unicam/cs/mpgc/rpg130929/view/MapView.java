@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// gestisce la mappa del gioco con il personaggio animato
 public class MapView {
 
     private static final int TILE_SIZE = 52;
@@ -23,6 +24,7 @@ public class MapView {
     private final Canvas canvas;
     private final Runnable onLocationChange;
 
+    // posizione del giocatore sulla mappa
     private double playerX = 5;
     private double playerY = 5;
     private int animFrame = 0;
@@ -38,7 +40,8 @@ public class MapView {
     public MapView(GameController controller, Runnable onLocationChange) {
         this.controller = controller;
         this.onLocationChange = onLocationChange;
-        this.canvas = new Canvas(MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
+        this.canvas = new Canvas(MAP_WIDTH * TILE_SIZE,
+                MAP_HEIGHT * TILE_SIZE);
         this.locationPositions = new HashMap<>();
 
         pixelFont = Font.loadFont(
@@ -51,6 +54,7 @@ public class MapView {
         draw();
     }
 
+    // coordinate fisse per ogni luogo sulla mappa
     private void initLocationPositions() {
         locationPositions.put("redazione", new int[]{5, 5});
         locationPositions.put("porto", new int[]{2, 8});
@@ -66,6 +70,7 @@ public class MapView {
         canvas.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
     }
 
+    // loop di gioco per gestire movimento e animazione
     private void startGameLoop() {
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -121,6 +126,7 @@ public class MapView {
         }
     }
 
+    // controlla se il giocatore è arrivato su un edificio
     private void checkLocationReached() {
         for (Map.Entry<String, int[]> entry :
                 locationPositions.entrySet()) {
@@ -145,10 +151,9 @@ public class MapView {
     }
 
     private void drawBackground(GraphicsContext gc) {
-        // Sfondo erba/città
+        // sfondo a scacchiera per dare un po' di texture
         for (int x = 0; x < MAP_WIDTH; x++) {
             for (int y = 0; y < MAP_HEIGHT; y++) {
-                // Alterniamo colori per dare texture
                 if ((x + y) % 2 == 0) {
                     gc.setFill(Color.web("#0d1a0d"));
                 } else {
@@ -161,34 +166,42 @@ public class MapView {
     }
 
     private void drawStreets(GraphicsContext gc) {
-        // Strade orizzontali
         gc.setFill(Color.web("#1a1a1a"));
-        gc.fillRect(0, 4 * TILE_SIZE, MAP_WIDTH * TILE_SIZE, TILE_SIZE);
-        gc.fillRect(0, 7 * TILE_SIZE, MAP_WIDTH * TILE_SIZE, TILE_SIZE);
+        // strade orizzontali
+        gc.fillRect(0, 4 * TILE_SIZE,
+                MAP_WIDTH * TILE_SIZE, TILE_SIZE);
+        gc.fillRect(0, 7 * TILE_SIZE,
+                MAP_WIDTH * TILE_SIZE, TILE_SIZE);
 
-        // Strade verticali
-        gc.fillRect(4 * TILE_SIZE, 0, TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
-        gc.fillRect(8 * TILE_SIZE, 0, TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
+        // strade verticali
+        gc.fillRect(4 * TILE_SIZE, 0,
+                TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
+        gc.fillRect(8 * TILE_SIZE, 0,
+                TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
 
-        // Linee gialle al centro delle strade
+        // linee tratteggiate al centro
         gc.setStroke(Color.web("#333300"));
         gc.setLineWidth(1);
         gc.setLineDashes(8, 6);
         gc.strokeLine(0, 4 * TILE_SIZE + TILE_SIZE / 2.0,
-                MAP_WIDTH * TILE_SIZE, 4 * TILE_SIZE + TILE_SIZE / 2.0);
+                MAP_WIDTH * TILE_SIZE,
+                4 * TILE_SIZE + TILE_SIZE / 2.0);
         gc.strokeLine(0, 7 * TILE_SIZE + TILE_SIZE / 2.0,
-                MAP_WIDTH * TILE_SIZE, 7 * TILE_SIZE + TILE_SIZE / 2.0);
+                MAP_WIDTH * TILE_SIZE,
+                7 * TILE_SIZE + TILE_SIZE / 2.0);
         gc.strokeLine(4 * TILE_SIZE + TILE_SIZE / 2.0, 0,
-                4 * TILE_SIZE + TILE_SIZE / 2.0, MAP_HEIGHT * TILE_SIZE);
+                4 * TILE_SIZE + TILE_SIZE / 2.0,
+                MAP_HEIGHT * TILE_SIZE);
         gc.strokeLine(8 * TILE_SIZE + TILE_SIZE / 2.0, 0,
-                8 * TILE_SIZE + TILE_SIZE / 2.0, MAP_HEIGHT * TILE_SIZE);
+                8 * TILE_SIZE + TILE_SIZE / 2.0,
+                MAP_HEIGHT * TILE_SIZE);
         gc.setLineDashes(0);
 
-        // Marciapiedi
         gc.setStroke(Color.web("#2a2a2a"));
         gc.setLineWidth(2);
         gc.strokeLine(0, 3 * TILE_SIZE + TILE_SIZE - 2,
-                MAP_WIDTH * TILE_SIZE, 3 * TILE_SIZE + TILE_SIZE - 2);
+                MAP_WIDTH * TILE_SIZE,
+                3 * TILE_SIZE + TILE_SIZE - 2);
         gc.strokeLine(0, 5 * TILE_SIZE + 2,
                 MAP_WIDTH * TILE_SIZE, 5 * TILE_SIZE + 2);
     }
@@ -209,24 +222,24 @@ public class MapView {
         double px = x * TILE_SIZE;
         double py = y * TILE_SIZE;
 
-        // Ombra dell'edificio
+        // ombra
         gc.setFill(Color.web("#000000", 0.5));
-        gc.fillRect(px + 4, py + 4, TILE_SIZE - 4, TILE_SIZE - 4);
+        gc.fillRect(px + 4, py + 4,
+                TILE_SIZE - 4, TILE_SIZE - 4);
 
-        // Colore base edificio
         Color baseColor = getBuildingColor(id, isCurrent);
         Color darkColor = baseColor.darker().darker();
         Color lightColor = baseColor.brighter();
 
-        // Corpo principale
+        // corpo edificio
         gc.setFill(baseColor);
         gc.fillRect(px + 2, py + 2, TILE_SIZE - 6, TILE_SIZE - 6);
 
-        // Tetto
+        // tetto
         gc.setFill(darkColor);
         gc.fillRect(px + 2, py + 2, TILE_SIZE - 6, 10);
 
-        // Mattoni (texture)
+        // texture mattoni
         gc.setStroke(darkColor);
         gc.setLineWidth(0.5);
         for (int i = 0; i < 3; i++) {
@@ -234,31 +247,30 @@ public class MapView {
                     px + TILE_SIZE - 4, py + 14 + i * 8);
         }
 
-        // Finestre
+        // finestre
         gc.setFill(isCurrent ?
                 Color.web("#FFD700") : Color.web("#88aaff", 0.6));
         gc.fillRect(px + 6, py + 14, 7, 7);
         gc.fillRect(px + TILE_SIZE - 15, py + 14, 7, 7);
 
-        // Porta
+        // porta
         gc.setFill(darkColor);
-        gc.fillRect(px + TILE_SIZE / 2 - 4, py + TILE_SIZE - 14,
-                8, 10);
+        gc.fillRect(px + TILE_SIZE / 2 - 4,
+                py + TILE_SIZE - 14, 8, 10);
 
-        // Cornice porta
         gc.setStroke(lightColor);
         gc.setLineWidth(1);
         gc.strokeRect(px + TILE_SIZE / 2 - 4,
                 py + TILE_SIZE - 14, 8, 10);
 
-        // Simbolo edificio
-        gc.setFill(isCurrent ? Color.web("#FFD700") :
-                Color.web("#ffffff"));
+        // lettera identificativa
+        gc.setFill(isCurrent ?
+                Color.web("#FFD700") : Color.web("#ffffff"));
         if (pixelFont != null) gc.setFont(pixelFont);
         gc.fillText(getLocationSymbol(id),
                 px + TILE_SIZE / 2 - 3, py + 12);
 
-        // Effetto luce se è il luogo corrente
+        // evidenzia il luogo corrente
         if (isCurrent) {
             gc.setFill(Color.web("#FFD700", 0.15));
             gc.fillRect(px, py, TILE_SIZE, TILE_SIZE);
@@ -282,15 +294,15 @@ public class MapView {
         };
     }
 
+    // disegna il personaggio animato
     private void drawPlayer(GraphicsContext gc) {
         double px = playerX * TILE_SIZE + TILE_SIZE / 2.0;
         double py = playerY * TILE_SIZE + TILE_SIZE / 2.0;
 
-        // Ombra
         gc.setFill(Color.web("#000000", 0.4));
         gc.fillOval(px - 8, py + 8, 16, 6);
 
-        // Gambe animate
+        // gambe con animazione camminata
         gc.setFill(Color.web("#1a1a6a"));
         if (moving) {
             switch (animFrame % 4) {
@@ -316,21 +328,19 @@ public class MapView {
             gc.fillRect(px + 1, py + 2, 4, 9);
         }
 
-        // Scarpe
         gc.setFill(Color.web("#3a1a00"));
         gc.fillRect(px - 6, py + 10, 5, 3);
         gc.fillRect(px + 1, py + 10, 5, 3);
 
-        // Corpo - impermeabile
+        // cappotto
         gc.setFill(Color.web("#2a2a2a"));
         gc.fillRect(px - 6, py - 8, 12, 12);
 
-        // Risvolto impermeabile
         gc.setFill(Color.web("#1a1a1a"));
         gc.fillRect(px - 4, py - 8, 3, 7);
         gc.fillRect(px + 1, py - 8, 3, 7);
 
-        // Braccia animate
+        // braccia
         gc.setFill(Color.web("#2a2a2a"));
         if (moving && animFrame % 2 == 0) {
             gc.fillRect(px - 10, py - 6, 4, 8);
@@ -340,34 +350,28 @@ public class MapView {
             gc.fillRect(px + 6, py - 6, 4, 8);
         }
 
-        // Mani
         gc.setFill(Color.web("#F5DEB3"));
         gc.fillOval(px - 11, py + 2, 5, 5);
         gc.fillOval(px + 6, py + 2, 5, 5);
 
-        // Collo
+        // testa
         gc.setFill(Color.web("#F5DEB3"));
         gc.fillRect(px - 2, py - 10, 4, 4);
-
-        // Testa
-        gc.setFill(Color.web("#F5DEB3"));
         gc.fillOval(px - 6, py - 20, 12, 12);
 
-        // Occhi
         gc.setFill(Color.web("#000000"));
         gc.fillOval(px - 4, py - 17, 2, 2);
         gc.fillOval(px + 2, py - 17, 2, 2);
 
-        // Cappello
+        // cappello fedora
         gc.setFill(Color.web("#111111"));
         gc.fillRect(px - 7, py - 24, 14, 5);
         gc.fillRect(px - 5, py - 29, 10, 7);
 
-        // Nastro cappello
         gc.setFill(Color.web("#8B0000"));
         gc.fillRect(px - 5, py - 25, 10, 2);
 
-        // Indicatore posizione
+        // triangolino indicatore posizione
         gc.setFill(Color.web("#FFD700", 0.8));
         gc.fillPolygon(
                 new double[]{px, px - 4, px + 4},
@@ -387,7 +391,6 @@ public class MapView {
             double px = pos[0] * TILE_SIZE;
             double py = pos[1] * TILE_SIZE;
 
-            // Sfondo nome
             gc.setFill(Color.web("#000000", 0.7));
             gc.fillRect(px - 2, py - 14, TILE_SIZE + 4, 12);
 
@@ -397,15 +400,13 @@ public class MapView {
         }
     }
 
+    // mini pannello in basso con info veloci
     private void drawMiniStats(GraphicsContext gc) {
-        // Mini pannello statistiche in basso a sinistra
         gc.setFill(Color.web("#000000", 0.8));
-        gc.fillRect(4, MAP_HEIGHT * TILE_SIZE - 40,
-                200, 36);
+        gc.fillRect(4, MAP_HEIGHT * TILE_SIZE - 40, 200, 36);
         gc.setStroke(Color.web("#333333"));
         gc.setLineWidth(1);
-        gc.strokeRect(4, MAP_HEIGHT * TILE_SIZE - 40,
-                200, 36);
+        gc.strokeRect(4, MAP_HEIGHT * TILE_SIZE - 40, 200, 36);
 
         if (pixelFont != null) gc.setFont(pixelFont);
         gc.setFill(Color.web("#FFD700"));
@@ -413,7 +414,7 @@ public class MapView {
                         controller.getJournalist().getStats().getLevel(),
                 10, MAP_HEIGHT * TILE_SIZE - 24);
 
-        gc.setFill(Color.web("#00ff41"));
+        gc.setFill(Color.web("#c8a96e"));
         gc.fillText("PROVE: " +
                         controller.getDiscoveredCluesCount() +
                         "/" + controller.getTotalClues(),
@@ -449,13 +450,9 @@ public class MapView {
         };
     }
 
-    public Canvas getCanvas() {
-        return canvas;
-    }
+    public Canvas getCanvas() { return canvas; }
 
-    public void refresh() {
-        draw();
-    }
+    public void refresh() { draw(); }
 
     public void setPlayerPosition(double x, double y) {
         this.playerX = x;

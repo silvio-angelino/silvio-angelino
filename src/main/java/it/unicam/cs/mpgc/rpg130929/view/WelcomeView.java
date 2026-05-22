@@ -16,6 +16,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+// schermata di benvenuto con tutorial a più step
 public class WelcomeView {
 
     private final GameController controller;
@@ -23,11 +24,13 @@ public class WelcomeView {
     private Label typewriterLabel;
     private Timeline typewriterTimeline;
 
+    // colori tema sepia
     private static final String GOLD = "#c8a96e";
     private static final String DARK_GOLD = "#8B6914";
     private static final String BG_DARK = "#050200";
     private static final String TEXT_DIM = "#6b5530";
 
+    // testi del tutorial
     private final String[] titles = {
             "IL CRONISTA",
             "ANNO 1935",
@@ -65,6 +68,7 @@ public class WelcomeView {
                 getClass().getClassLoader()
                         .getResourceAsStream("PressStart2P-Regular.ttf"), 22);
 
+        // disegno lo sfondo con canvas
         Canvas bgCanvas = new Canvas(1280, 800);
         drawBackground(bgCanvas.getGraphicsContext2D());
 
@@ -101,6 +105,7 @@ public class WelcomeView {
         if (pixelFont != null)
             sep1.setFont(Font.font(pixelFont.getFamily(), 10));
 
+        // label con effetto macchina da scrivere
         typewriterLabel = new Label("");
         typewriterLabel.setStyle("-fx-text-fill: " + GOLD + ";");
         typewriterLabel.setWrapText(true);
@@ -132,6 +137,7 @@ public class WelcomeView {
             nextBtn.setOnAction(e -> showStep(step + 1));
             buttons.getChildren().add(nextBtn);
         } else {
+            // ultimo step — pulsante per iniziare
             Button startBtn = buildButton(
                     ">> INIZIA MISSIONE <<", pixelFont, true);
             startBtn.setOnAction(e -> {
@@ -147,9 +153,9 @@ public class WelcomeView {
         if (pixelFont != null)
             bottomDeco.setFont(Font.font(pixelFont.getFamily(), 9));
 
-        content.getChildren().addAll(
-                topDeco, stepLabel, titleLabel, sep1,
-                typewriterLabel, sep2, buttons, bottomDeco);
+        content.getChildren().addAll(topDeco, stepLabel,
+                titleLabel, sep1, typewriterLabel, sep2,
+                buttons, bottomDeco);
 
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: " + BG_DARK + ";");
@@ -163,47 +169,36 @@ public class WelcomeView {
     }
 
     private void drawBackground(GraphicsContext gc) {
-        // Cielo notturno profondo
         gc.setFill(Color.web("#050200"));
         gc.fillRect(0, 0, 1280, 800);
 
-        // Sfumatura cielo blu notte
+        // sfumatura cielo
         for (int y = 0; y < 600; y++) {
             double ratio = y / 600.0;
             gc.setFill(Color.web("#0a0510", 0.4 * (1 - ratio)));
             gc.fillRect(0, y, 1280, 1);
         }
 
-        // STELLE — molto visibili
         drawStars(gc);
-
-        // LUNA — grande e definita
         drawMoon(gc, 980, 60);
-
-        // GRATTACIELI PIXEL ART
         drawPixelBuildings(gc);
 
-        // LAMPIONI
         drawLampPost(gc, 100, 480);
         drawLampPost(gc, 350, 470);
         drawLampPost(gc, 1130, 470);
 
-        // INVESTIGATORE di profilo
         drawInvestigator(gc, 1130, 470);
 
-        // Strada
+        // strada e marciapiede
         gc.setFill(Color.web("#100800"));
         gc.fillRect(0, 648, 1280, 152);
-
-        // Marciapiede
         gc.setFill(Color.web("#0d0600"));
         gc.fillRect(0, 638, 1280, 12);
-        // Linea marciapiede
         gc.setStroke(Color.web("#1a0d00"));
         gc.setLineWidth(1);
         gc.strokeLine(0, 638, 1280, 638);
 
-        // Riflessi lampioni sulla strada
+        // riflessi lampioni
         gc.setFill(Color.web("#c8a96e", 0.06));
         gc.fillOval(70, 650, 90, 25);
         gc.fillOval(320, 645, 90, 25);
@@ -211,34 +206,31 @@ public class WelcomeView {
     }
 
     private void drawStars(GraphicsContext gc) {
-        // Stelle grandi e luminose
+        // stelle grandi con alone
         int[][] bigStars = {
-                {50, 25}, {150, 45}, {280, 20}, {420, 55},
-                {580, 30}, {720, 60}, {860, 25}, {1100, 40},
-                {1220, 70}, {200, 80}, {650, 90}, {900, 50},
-                {1180, 30}, {70, 100}, {350, 110}, {500, 70},
-                {800, 85}, {1050, 95}, {130, 130}, {450, 140}
+                {50,25},{150,45},{280,20},{420,55},
+                {580,30},{720,60},{860,25},{1100,40},
+                {1220,70},{200,80},{650,90},{900,50},
+                {1180,30},{70,100},{350,110},{500,70},
+                {800,85},{1050,95},{130,130},{450,140}
         };
 
         for (int[] s : bigStars) {
-            // Alone stella
             gc.setFill(Color.web("#c8a96e", 0.15));
             gc.fillOval(s[0] - 3, s[1] - 3, 10, 10);
-            // Stella principale
             gc.setFill(Color.web("#e8d090", 0.9));
             gc.fillOval(s[0], s[1], 4, 4);
-            // Bagliore centrale
             gc.setFill(Color.web("#ffffff", 0.7));
             gc.fillOval(s[0] + 1, s[1] + 1, 2, 2);
         }
 
-        // Stelle medie
+        // stelle medie
         int[][] medStars = {
-                {30, 60}, {110, 35}, {230, 95}, {370, 25},
-                {490, 80}, {610, 45}, {740, 110}, {820, 35},
-                {950, 75}, {1050, 55}, {1160, 85}, {1240, 45},
-                {85, 145}, {310, 125}, {560, 135}, {690, 100},
-                {930, 120}, {1200, 110}, {160, 160}, {410, 150}
+                {30,60},{110,35},{230,95},{370,25},
+                {490,80},{610,45},{740,110},{820,35},
+                {950,75},{1050,55},{1160,85},{1240,45},
+                {85,145},{310,125},{560,135},{690,100},
+                {930,120},{1200,110},{160,160},{410,150}
         };
 
         for (int[] s : medStars) {
@@ -246,7 +238,7 @@ public class WelcomeView {
             gc.fillOval(s[0], s[1], 3, 3);
         }
 
-        // Stelle piccole — moltissime
+        // stelle piccole
         int[][] smallStars = {
                 {20,40},{60,15},{90,75},{180,30},{250,65},
                 {330,85},{400,10},{470,50},{540,90},{620,20},
@@ -264,10 +256,9 @@ public class WelcomeView {
             gc.fillOval(s[0], s[1], 2, 2);
         }
 
-        // Alcune stelle con effetto scintillio (croce)
+        // stelle con effetto croce
         int[][] sparkleStars = {
-                {200, 50}, {500, 35}, {780, 55},
-                {1050, 40}, {320, 90}
+                {200,50},{500,35},{780,55},{1050,40},{320,90}
         };
         for (int[] s : sparkleStars) {
             gc.setFill(Color.web("#ffffff", 0.8));
@@ -281,46 +272,36 @@ public class WelcomeView {
     private void drawMoon(GraphicsContext gc, int x, int y) {
         int size = 110;
 
-        // Alone esterno luna
+        // alone esterno
         gc.setFill(Color.web("#c8a96e", 0.05));
         gc.fillOval(x - 25, y - 25, size + 50, size + 50);
-
-        // Alone medio
         gc.setFill(Color.web("#c8a96e", 0.10));
         gc.fillOval(x - 12, y - 12, size + 24, size + 24);
 
-        // Base luna — giallo caldo
+        // corpo luna
         gc.setFill(Color.web("#f0d878"));
         gc.fillOval(x, y, size, size);
-
-        // Sfumatura luna — lato illuminato
         gc.setFill(Color.web("#ffe89a"));
         gc.fillOval(x + 8, y + 6, size - 20, size - 20);
-
-        // Lato in ombra — crescent shadow
         gc.setFill(Color.web("#c8a050", 0.5));
         gc.fillOval(x + size / 3, y + 5, size / 2, size - 10);
 
-        // Crateri dettagliati
-        // Cratere grande
+        // crateri
         gc.setFill(Color.web("#b89040", 0.6));
         gc.fillOval(x + 20, y + 20, 28, 22);
         gc.setFill(Color.web("#d4a855", 0.4));
         gc.fillOval(x + 23, y + 23, 18, 14);
 
-        // Cratere medio 1
         gc.setFill(Color.web("#b89040", 0.5));
         gc.fillOval(x + 60, y + 35, 18, 15);
         gc.setFill(Color.web("#d4a855", 0.3));
         gc.fillOval(x + 63, y + 38, 10, 9);
 
-        // Cratere medio 2
         gc.setFill(Color.web("#b89040", 0.5));
         gc.fillOval(x + 30, y + 65, 20, 16);
         gc.setFill(Color.web("#d4a855", 0.3));
         gc.fillOval(x + 33, y + 68, 12, 10);
 
-        // Crateri piccoli
         gc.setFill(Color.web("#b89040", 0.4));
         gc.fillOval(x + 75, y + 20, 10, 8);
         gc.fillOval(x + 15, y + 55, 12, 10);
@@ -328,12 +309,10 @@ public class WelcomeView {
         gc.fillOval(x + 82, y + 60, 10, 8);
         gc.fillOval(x + 40, y + 15, 8, 6);
 
-        // Texture superficie
         gc.setFill(Color.web("#c8a050", 0.15));
         gc.fillOval(x + 5, y + 40, size - 15, 20);
         gc.fillOval(x + 10, y + 70, size - 25, 15);
 
-        // Bordo luna
         gc.setStroke(Color.web("#a87830", 0.4));
         gc.setLineWidth(2);
         gc.strokeOval(x, y, size, size);
@@ -349,6 +328,8 @@ public class WelcomeView {
                 buildingColor, buildingDark, windowOn, 3, 6);
         drawPixelBuilding(gc, 100, 280, 70, 370,
                 buildingColor, buildingDark, windowOn, 2, 9);
+
+        // toretta sull'edificio 2
         gc.setFill(buildingDark);
         gc.fillRect(115, 250, 40, 35);
         gc.fillRect(125, 230, 20, 25);
@@ -361,12 +342,15 @@ public class WelcomeView {
                 buildingColor, buildingDark, windowDim, 3, 7);
         drawPixelBuilding(gc, 300, 200, 80, 450,
                 buildingColor, buildingDark, windowOn, 2, 12);
+
         gc.setFill(buildingDark);
         gc.fillRect(315, 170, 50, 35);
         gc.fillRect(325, 150, 30, 25);
 
         drawPixelBuilding(gc, 390, 300, 140, 350,
                 buildingColor, buildingDark, windowOn, 4, 8);
+
+        // grattacielo centrale con antenna
         drawPixelBuilding(gc, 540, 150, 90, 500,
                 buildingColor, buildingDark, windowOn, 2, 14);
         gc.setFill(buildingDark);
@@ -392,6 +376,7 @@ public class WelcomeView {
                 buildingColor, buildingDark, windowOn, 2, 7);
     }
 
+    // disegna un singolo edificio pixel art
     private void drawPixelBuilding(GraphicsContext gc,
                                    int x, int y, int w, int h,
                                    Color base, Color dark, Color windowColor,
@@ -402,6 +387,7 @@ public class WelcomeView {
         gc.fillRect(x + w - 8, y, 8, h);
         gc.fillRect(x, y, w, 8);
 
+        // fasce orizzontali
         gc.setFill(dark);
         for (int i = 1; i < rows / 3; i++) {
             gc.fillRect(x, y + i * (h / 3), w, 2);
@@ -413,6 +399,7 @@ public class WelcomeView {
         int marginY = 15;
         int spacingY = h / (rows + 1);
 
+        // finestre
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 int wx = x + marginX + c * (winW + 6);
@@ -447,93 +434,79 @@ public class WelcomeView {
         gc.setFill(Color.web("#8B6914"));
         gc.fillRect(x - 30, y - 22, 22, 4);
         gc.fillRect(x - 30, y, 22, 4);
+        // alone luce
         gc.setFill(Color.web("#c8a96e", 0.18));
         gc.fillOval(x - 55, y - 45, 72, 72);
         gc.setFill(Color.web("#c8a96e", 0.08));
         gc.fillOval(x - 75, y - 65, 112, 112);
     }
 
+    // disegna l'investigatore di profilo appoggiato al lampione
     private void drawInvestigator(GraphicsContext gc,
                                   int lampX, int lampY) {
-        // Posizionato a destra del lampione, di profilo
-        // Il personaggio guarda verso sinistra
         int x = lampX + 25;
         int y = lampY + 15;
 
-        // OMBRA
         gc.setFill(Color.web("#000000", 0.5));
         gc.fillOval(x - 5, y + 148, 55, 14);
 
-        // STIVALI - profilo
+        // stivali di profilo
         gc.setFill(Color.web("#1a0d00"));
-        // Gamba anteriore (sinistra, verso lo spettatore)
         gc.fillRect(x + 10, y + 118, 14, 22);
         gc.fillRect(x + 8, y + 136, 18, 8);
-        // Gamba posteriore (destra, in ombra)
         gc.setFill(Color.web("#0d0600"));
         gc.fillRect(x + 20, y + 118, 12, 20);
         gc.fillRect(x + 18, y + 134, 16, 7);
 
-        // PANTALONI - profilo
+        // pantaloni
         gc.setFill(Color.web("#1a1000"));
         gc.fillRect(x + 10, y + 90, 14, 32);
         gc.setFill(Color.web("#100b00"));
         gc.fillRect(x + 20, y + 90, 10, 30);
 
-        // CAPPOTTO LUNGO - profilo
-        // Corpo principale
+        // cappotto lungo
         gc.setFill(Color.web("#2a1800"));
         gc.fillRect(x + 5, y + 20, 35, 75);
-        // Lato in ombra
         gc.setFill(Color.web("#1a0e00"));
         gc.fillRect(x + 28, y + 20, 12, 75);
-        // Risvolto cappotto davanti
         gc.setFill(Color.web("#1a0d00"));
         gc.fillRect(x + 5, y + 20, 7, 35);
-        // Bottoni visibili di profilo
+
+        // bottoni
         gc.setFill(Color.web("#8B6914"));
         for (int i = 0; i < 3; i++) {
             gc.fillOval(x + 14, y + 30 + i * 14, 4, 4);
         }
-        // Cintura
+
         gc.setFill(Color.web("#3a2000"));
         gc.fillRect(x + 5, y + 55, 35, 5);
         gc.setFill(Color.web("#8B6914"));
         gc.fillRect(x + 18, y + 54, 10, 7);
 
-        // SPALLA anteriore
         gc.setFill(Color.web("#2a1800"));
         gc.fillRect(x + 2, y + 20, 8, 18);
-        // SPALLA posteriore (ombra)
         gc.setFill(Color.web("#1a0e00"));
         gc.fillRect(x + 38, y + 20, 6, 16);
 
-        // BRACCIO ANTERIORE - appoggiato al lampione
-        // Il braccio sinistro tocca il palo
+        // braccio sinistro appoggiato al lampione
         gc.setFill(Color.web("#2a1800"));
         gc.fillRect(x - 5, y + 22, 12, 45);
-        // Gomito piegato
         gc.fillRect(x - 10, y + 55, 15, 10);
-        // Avambraccio verso il palo
         gc.fillRect(x - 15, y + 60, 15, 8);
-        // Mano anteriore
         gc.setFill(Color.web("#b89060"));
         gc.fillOval(x - 18, y + 62, 10, 9);
 
-        // BRACCIO POSTERIORE - tiene giornale
+        // braccio destro con giornale
         gc.setFill(Color.web("#1a0e00"));
         gc.fillRect(x + 36, y + 22, 8, 40);
-        // Mano posteriore
         gc.setFill(Color.web("#a07840"));
         gc.fillOval(x + 35, y + 60, 9, 9);
 
-        // GIORNALE - tenuto con braccio posteriore
+        // giornale
         gc.setFill(Color.web("#d4b878"));
         gc.fillRect(x + 40, y + 40, 32, 28);
-        // Pagine giornale
         gc.setFill(Color.web("#c8a96e"));
         gc.fillRect(x + 56, y + 40, 16, 28);
-        // Testo giornale
         gc.setFill(Color.web("#1a0d00"));
         gc.fillRect(x + 42, y + 44, 12, 2);
         gc.fillRect(x + 42, y + 49, 12, 2);
@@ -541,56 +514,45 @@ public class WelcomeView {
         gc.fillRect(x + 58, y + 44, 12, 2);
         gc.fillRect(x + 58, y + 49, 12, 2);
         gc.fillRect(x + 58, y + 54, 10, 2);
-        // Titolo giornale
         gc.setFill(Color.web("#0a0500"));
         gc.fillRect(x + 42, y + 42, 26, 4);
 
-        // COLLO - di profilo
+        // collo
         gc.setFill(Color.web("#b89060"));
         gc.fillRect(x + 10, y + 8, 6, 14);
 
-        // TESTA - di profilo (vista da sinistra)
-        // Parte posteriore testa (capelli)
+        // testa di profilo
         gc.setFill(Color.web("#1a0d00"));
         gc.fillOval(x + 5, y - 18, 26, 28);
-        // Faccia - profilo sinistro
         gc.setFill(Color.web("#c8a96e"));
         gc.fillOval(x + 8, y - 16, 22, 26);
-        // Fronte
         gc.fillRect(x + 14, y - 18, 12, 10);
 
-        // OCCHIO - di profilo
+        // occhio
         gc.setFill(Color.web("#1a0d00"));
         gc.fillOval(x + 12, y - 8, 5, 4);
-        // Sopracciglio
         gc.fillRect(x + 11, y - 11, 8, 2);
-        // Occhio bianco
         gc.setFill(Color.web("#e8d090"));
         gc.fillOval(x + 13, y - 7, 3, 3);
-        // Pupilla
         gc.setFill(Color.web("#0a0500"));
         gc.fillOval(x + 13, y - 7, 2, 2);
 
-        // NASO - di profilo, prominente
+        // naso
         gc.setFill(Color.web("#b89060"));
         gc.fillRect(x + 28, y - 6, 5, 4);
         gc.fillRect(x + 30, y - 2, 4, 4);
 
-        // BOCCA - di profilo con sigaretta
+        // bocca e baffi
         gc.setFill(Color.web("#a07050"));
         gc.fillRect(x + 24, y + 4, 6, 3);
-
-        // BAFFI - di profilo
         gc.setFill(Color.web("#1a0d00"));
         gc.fillRect(x + 18, y + 2, 12, 3);
 
-        // SIGARETTA che sporge
+        // sigaretta con fumo
         gc.setFill(Color.web("#e8d090"));
         gc.fillRect(x + 28, y + 5, 18, 3);
-        // Brace sigaretta
         gc.setFill(Color.web("#ff4400", 0.8));
         gc.fillOval(x + 44, y + 4, 5, 5);
-        // Fumo sigaretta
         gc.setFill(Color.web("#c8a96e", 0.25));
         gc.fillOval(x + 46, y - 5, 10, 12);
         gc.setFill(Color.web("#c8a96e", 0.15));
@@ -598,26 +560,19 @@ public class WelcomeView {
         gc.setFill(Color.web("#c8a96e", 0.08));
         gc.fillOval(x + 42, y - 32, 18, 17);
 
-        // CAPPELLO FEDORA - di profilo
-        // Tesa anteriore (sporge in avanti)
+        // cappello fedora
         gc.setFill(Color.web("#111111"));
         gc.fillRect(x + 4, y - 20, 42, 5);
-        // Corona cappello
         gc.fillRect(x + 8, y - 42, 24, 24);
-        // Tesa posteriore (più corta)
         gc.fillRect(x + 5, y - 20, 10, 4);
-        // Nastro cappello
         gc.setFill(Color.web("#8B6914"));
         gc.fillRect(x + 8, y - 20, 24, 3);
-        // Profilo cappello (curva fedora)
         gc.setFill(Color.web("#111111"));
         gc.fillOval(x + 8, y - 46, 24, 10);
-
-        // Ombra cappello sul viso
         gc.setFill(Color.web("#0a0500", 0.3));
         gc.fillRect(x + 8, y - 16, 24, 8);
 
-        // Luce del lampione sul personaggio
+        // luce lampione sul personaggio
         gc.setFill(Color.web("#c8a96e", 0.06));
         gc.fillOval(x - 25, y - 30, 90, 210);
     }
@@ -653,6 +608,7 @@ public class WelcomeView {
         return btn;
     }
 
+    // effetto macchina da scrivere — mostra il testo carattere per carattere
     private void startTypewriterEffect(String text) {
         typewriterLabel.setText("");
         final int[] index = {0};

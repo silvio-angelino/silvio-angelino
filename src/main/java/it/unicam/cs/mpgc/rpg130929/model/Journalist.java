@@ -1,27 +1,20 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-/**
- * Rappresenta il giornalista investigativo controllato dal giocatore.
- * Estende {@link GameCharacter} e gestisce il taccuino degli indizi,
- * gli articoli scritti, i luoghi visitati, le statistiche e le missioni.
- *
- * @author Silvio Angelino
- * @version 1.0
- */
+// il personaggio principale controllato dal giocatore
 public class Journalist extends GameCharacter {
 
     private int reputation;
     private PlayerStats stats;
-    private final List<Clue> notebook;
-    private final List<Article> articles;
-    private final List<Location> visitedLocations;
-    private final List<Quest> activeQuests;
-    private final List<Quest> completedQuests;
+    private List<Clue> notebook;
+    private List<Article> articles;
+    private List<Location> visitedLocations;
+    private List<Quest> activeQuests;
+    private List<Quest> completedQuests;
 
+    // serve a Gson
     public Journalist() {
         super();
         this.notebook = new ArrayList<>();
@@ -50,8 +43,10 @@ public class Journalist extends GameCharacter {
     }
 
     public int getReputation() { return reputation; }
+
     public PlayerStats getStats() { return stats; }
 
+    // aggiunge un indizio al taccuino e guadagna XP
     public void addClueToNotebook(Clue clue) {
         if (clue == null)
             throw new IllegalArgumentException("Indizio non valido");
@@ -65,7 +60,8 @@ public class Journalist extends GameCharacter {
     public void addArticle(Article article) {
         if (article == null)
             throw new IllegalArgumentException("Articolo non valido");
-        if (!articles.contains(article)) articles.add(article);
+        if (!articles.contains(article))
+            articles.add(article);
     }
 
     public void publishArticle(Article article) {
@@ -93,6 +89,7 @@ public class Journalist extends GameCharacter {
             activeQuests.add(quest);
     }
 
+    // sposta la missione da attiva a completata
     public void completeQuest(Quest quest) {
         if (quest == null)
             throw new IllegalArgumentException("Missione non valida");
@@ -104,23 +101,17 @@ public class Journalist extends GameCharacter {
         }
     }
 
-    public List<Clue> getNotebook() {
-        return Collections.unmodifiableList(notebook);
-    }
+    public List<Clue> getNotebook() { return notebook; }
 
-    public List<Article> getArticles() {
-        return Collections.unmodifiableList(articles);
-    }
+    public List<Article> getArticles() { return articles; }
 
     public List<Location> getVisitedLocations() {
-        return Collections.unmodifiableList(visitedLocations);
+        return visitedLocations;
     }
 
-    public List<Quest> getActiveQuests() {
-        return Collections.unmodifiableList(activeQuests);
-    }
+    public List<Quest> getActiveQuests() { return activeQuests; }
 
     public List<Quest> getCompletedQuests() {
-        return Collections.unmodifiableList(completedQuests);
+        return completedQuests;
     }
 }
