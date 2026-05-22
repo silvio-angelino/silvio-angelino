@@ -113,12 +113,13 @@ se è stata scoperta.
 #### Article implements Identifiable, Publishable
 Rappresenta un articolo scritto dal giornalista.
 Responsabilità: contenere le prove usate e calcolare
-il valore di reputazione.
+il valore di reputazione (ogni prova vale 10 punti).
 
 #### PlayerStats
 Gestisce le statistiche RPG del personaggio.
 Responsabilità: intelligenza, carisma, furtività,
-livello ed esperienza. Gestisce il level-up automatico.
+livello ed esperienza. Gestisce il level-up automatico
+ogni 100 XP.
 
 #### Quest
 Rappresenta una missione del gioco.
@@ -142,8 +143,10 @@ Controller principale del gioco.
 Responsabilità: inizializzare il gioco dai file JSON,
 gestire movimento, raccolta prove, dialoghi, missioni,
 metro sospetto, sistema giorni e persistenza.
-Usa ReputationCalculator (lambda) per il calcolo.
-Fornisce getCurrentObjective() per guidare il giocatore.
+Usa ReputationCalculator come lambda per il calcolo
+della reputazione.
+Fornisce getCurrentObjective() per guidare il giocatore
+passo passo.
 
 ### Package repository
 
@@ -154,6 +157,8 @@ in formato JSON tramite la libreria Gson.
 #### GameDataLoader
 Responsabilità: caricare i dati di gioco dai file JSON
 in resources (locations, clues, npcs, quests).
+Contiene le inner class NpcData, ChoiceData e QuestData
+per la deserializzazione dei dati.
 
 ### Package view
 
@@ -167,20 +172,23 @@ sono prove disponibili nel luogo corrente.
 #### MapView
 Vista della mappa con movimento WASD e frecce.
 Responsabilità: disegnare la mappa pixel art su Canvas
-JavaFX, gestire il movimento del personaggio animato,
-notificare il controller al cambio di posizione.
+JavaFX, gestire il movimento del personaggio animato
+tramite AnimationTimer, notificare il controller
+al cambio di posizione.
 
 #### WelcomeView
 Schermata introduttiva con tutorial a più passi.
 Responsabilità: mostrare la storia del gioco con
-effetto macchina da scrivere e sfondo città notturna.
+effetto macchina da scrivere e sfondo città notturna
+pixel art disegnata su Canvas.
 
 ### Package principale
 
 #### GameStats
 Classe di utilità per le statistiche di gioco.
 Responsabilità: usare Stream API per calcoli sui dati
-(prove scoperte, reputazione totale, articoli pubblicati).
+(prove scoperte, reputazione totale, articoli pubblicati,
+raggruppamento prove per stato).
 
 ---
 
@@ -278,6 +286,12 @@ Il metro del sospetto può essere esteso con:
 - Oggetti che riducono il sospetto
 - Abilità speciali legate alla furtività
 
+### Estendere il sistema giorni
+Il numero di giorni disponibili è definito dalla
+costante MAX_DAYS in GameController. Modificarla
+cambia la difficoltà del gioco senza toccare
+altra logica.
+
 ---
 
 ## 8. Principi SOLID Applicati
@@ -307,7 +321,8 @@ Ogni classe ha una sola responsabilità:
 - Clue implementa Identifiable, Describable e
   Discoverable — solo quello che gli serve
 - Article implementa Identifiable e Publishable
-- Nessuna classe implementa metodi inutili
+- Ogni classe implementa solo le interfacce
+  di cui ha bisogno
 
 ### D — Dependency Inversion Principle
 - GameController dipende da GameRepository
@@ -332,6 +347,8 @@ Claude (Anthropic) come assistente AI.
   di errori di compilazione
 - Configurazione — supporto per Gradle, JavaFX,
   dipendenze
+- Revisione e miglioramento dello stile del codice
+  per renderlo più leggibile e naturale
 
 ### Livello di intervento personale
 - Tutte le scelte architetturali sono state discusse
