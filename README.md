@@ -19,16 +19,18 @@ il tempo scada.
 ### Istruzioni
 
 ```bash
-git clone https://github.com/silvio-angelino/silvio-angelino.git
+git clone https://github.com/silvio-angelino/silvio-angelino.git il-cronista
 cd il-cronista
 ```
 
 ### Build del progetto
+
 ```bash
 ./gradlew build
 ```
 
 ### Esecuzione
+
 ```bash
 ./gradlew run
 ```
@@ -41,13 +43,54 @@ cd il-cronista
 - **OTTIENI PROVE** — Appare automaticamente quando
   sei in un luogo con prove disponibili
 - **Parla con i CONTATTI** — Clicca sui personaggi
-  per ottenere informazioni
+  per ottenere informazioni. Alcuni dialoghi rivelano
+  indizi esclusivi sulla trama, non ottenibili in
+  nessun altro modo
 - **SCRIVI RAPPORTO** — Quando hai abbastanza prove
   scrivi il rapporto finale
 - **Obiettivo** — Raggiungi 100 di credibilità
   entro 10 giorni senza essere scoperto
 - **Attenzione** — Evita che il sospetto raggiunga
   100 o la missione fallirà!
+- **Continua partita** — Se esiste un salvataggio,
+  all'avvio puoi scegliere se riprendere o iniziare
+  una nuova partita
+
+---
+
+## Funzionalità presenti
+
+- Mappa esplorabile con movimento in tempo reale
+- Sistema di dialoghi con NPC, con scelte vincolate
+  al carisma del personaggio
+- Indizi esclusivi ottenibili solo tramite dialogo,
+  distinti da quelli raccoglibili esplorando
+- Sistema di missioni tracciate automaticamente
+- Persistenza su file JSON (salvataggio e caricamento
+  partita funzionanti)
+- Sistema di progressione (livello, esperienza,
+  statistiche)
+- Interfaccia grafica JavaFX interamente
+  programmatica (nessun FXML)
+
+## Idee per sviluppi futuri
+
+- Missioni scelte dal giocatore, non solo tracciate
+  automaticamente
+- Specializzazione delle statistiche (invece di
+  salire tutte insieme ad ogni livello)
+- Più varietà negli eventi durante l'esplorazione
+
+---
+
+## Note tecniche
+
+Il progetto segue il pattern architetturale MVC.
+La persistenza usa Gson su file JSON, con repository
+intercambiabile tramite l'interfaccia `GameRepository`
+(principio DIP). Per i dettagli su architettura,
+classi, interfacce e principi SOLID applicati,
+vedi la Wiki del repository.
 
 ---
 
@@ -57,6 +100,8 @@ cd il-cronista
 - JavaFX 24
 - Gson 2.13.2
 - Gradle
+- Font "Press Start 2P" (Google Fonts, licenza SIL
+  Open Font License)
 
 ---
 
@@ -71,5 +116,4 @@ Utilizzato **Claude (Anthropic)** come assistente AI per:
   comprese e adattate personalmente
 - Revisione e miglioramento dello stile del codice
 
-Per una descrizione dettagliata consultare la
-**Wiki del repository**.
+Per una descrizione dettagliata consultare la **Wiki del repository**.
