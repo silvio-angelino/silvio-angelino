@@ -24,34 +24,54 @@ public class WelcomeView {
     private Label typewriterLabel;
     private Timeline typewriterTimeline;
 
+    // font caricati una sola volta e riusati per tutti gli step
+    private final Font pixelFont;
+    private final Font titleFont;
+
+    // sfondo disegnato una sola volta e riusato per tutti gli step,
+    // dato che non cambia da uno step all'altro
+    private final Canvas bgCanvas;
+
     // colori tema sepia
     private static final String GOLD = "#c8a96e";
     private static final String DARK_GOLD = "#8B6914";
     private static final String BG_DARK = "#050200";
     private static final String TEXT_DIM = "#6b5530";
 
-    // testi del tutorial
-    private final String[] titles = {
-            "IL CRONISTA",
-            "ANNO 1935",
-            "LA TUA MISSIONE",
-            "COME GIOCARE",
-            "PERICOLO",
-            "SEI PRONTO?"
-    };
+    // un singolo step del tutorial: titolo e contenuto insieme,
+    // così non rischiano di disallinearsi come con due array paralleli
+    private record TutorialStep(String title, String content) {}
 
-    private final String[] contents = {
-            "Una citta' avvolta\nnell'ombra della guerra.\n\nSpie, traditori\ne segreti oscuri\nsi nascondono\ndietro ogni angolo.\n\nTu sei l'unico\nche puo' scoprire\nla verita'...",
-            "L'Europa trema.\nLa guerra si avvicina.\n\nReti di spionaggio\ninfiltrano ogni\nistituzione della\ncitta'.\n\nIl tuo giornale\nti ha incaricato\ndi scoprire tutto.",
-            "Infiltra la rete\ndi spie straniere.\n\nRaccogli le prove,\nparla con i contatti,\nsvela la cospirazione\ne scrivi il rapporto\nche cambiera'\nla storia!",
-            "WASD / FRECCE\n= Muovi l'agente\n\nRAGGIUNGI un luogo\nper esplorarlo\n\nPARLA con i\nCONTATTI locali\n\nSCRIVI il RAPPORTO\nfinale",
-            "Le spie sono\novunque.\n\nIl tuo carisma\ndetermina le\ninformazioni\nche ottieni.\n\nSali di livello\nper diventare\npiu' potente.",
-            "La citta' aspetta.\n\nLe spie operano\nnell'ombra.\n\nIl tuo giornale\nti aspetta.\n\nBuona fortuna,\nAgente..."
+    private final TutorialStep[] steps = {
+            new TutorialStep("IL CRONISTA",
+                    "Una citta' avvolta\nnell'ombra della guerra.\n\nSpie, traditori\ne segreti oscuri\nsi nascondono\ndietro ogni angolo.\n\nTu sei l'unico\nche puo' scoprire\nla verita'..."),
+            new TutorialStep("ANNO 1935",
+                    "L'Europa trema.\nLa guerra si avvicina.\n\nReti di spionaggio\ninfiltrano ogni\nistituzione della\ncitta'.\n\nIl tuo giornale\nti ha incaricato\ndi scoprire tutto."),
+            new TutorialStep("LA TUA MISSIONE",
+                    "Infiltra la rete\ndi spie straniere.\n\nRaccogli le prove,\nparla con i contatti,\nsvela la cospirazione\ne scrivi il rapporto\nche cambiera'\nla storia!"),
+            new TutorialStep("COME GIOCARE",
+                    "WASD / FRECCE\n= Muovi l'agente\n\nRAGGIUNGI un luogo\nper esplorarlo\n\nPARLA con i\nCONTATTI locali\n\nSCRIVI il RAPPORTO\nfinale"),
+            new TutorialStep("PERICOLO",
+                    "Le spie sono\novunque.\n\nIl tuo carisma\ndetermina le\ninformazioni\nche ottieni.\n\nSali di livello\nper diventare\npiu' potente."),
+            new TutorialStep("SEI PRONTO?",
+                    "La citta' aspetta.\n\nLe spie operano\nnell'ombra.\n\nIl tuo giornale\nti aspetta.\n\nBuona fortuna,\nAgente...")
     };
 
     public WelcomeView(GameController controller, Stage stage) {
         this.controller = controller;
         this.stage = stage;
+
+        // carico i font una sola volta, non ad ogni cambio di step
+        this.pixelFont = Font.loadFont(
+                getClass().getClassLoader()
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 11);
+        this.titleFont = Font.loadFont(
+                getClass().getClassLoader()
+                        .getResourceAsStream("PressStart2P-Regular.ttf"), 22);
+
+        // disegno lo sfondo una sola volta, non cambia tra gli step
+        this.bgCanvas = new Canvas(1280, 800);
+        drawBackground(bgCanvas.getGraphicsContext2D());
     }
 
     public void show() {
@@ -60,17 +80,6 @@ public class WelcomeView {
 
     private void showStep(int step) {
         if (typewriterTimeline != null) typewriterTimeline.stop();
-
-        Font pixelFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 11);
-        Font titleFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 22);
-
-        // disegno lo sfondo con canvas
-        Canvas bgCanvas = new Canvas(1280, 800);
-        drawBackground(bgCanvas.getGraphicsContext2D());
 
         VBox content = new VBox(20);
         content.setPadding(new Insets(40));
@@ -87,12 +96,12 @@ public class WelcomeView {
             topDeco.setFont(Font.font(pixelFont.getFamily(), 9));
 
         Label stepLabel = new Label(
-                "[ " + (step + 1) + " di " + titles.length + " ]");
+                "[ " + (step + 1) + " di " + steps.length + " ]");
         stepLabel.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
         if (pixelFont != null)
             stepLabel.setFont(Font.font(pixelFont.getFamily(), 8));
 
-        Label titleLabel = new Label(titles[step]);
+        Label titleLabel = new Label(steps[step].title());
         titleLabel.setStyle(
                 "-fx-text-fill: " + GOLD + ";" +
                         "-fx-effect: dropshadow(gaussian," +
@@ -115,7 +124,7 @@ public class WelcomeView {
         if (pixelFont != null)
             typewriterLabel.setFont(
                     Font.font(pixelFont.getFamily(), 11));
-        startTypewriterEffect(contents[step]);
+        startTypewriterEffect(steps[step].content());
 
         Label sep2 = new Label("── ✦ ──");
         sep2.setStyle("-fx-text-fill: " + DARK_GOLD + ";");
@@ -131,7 +140,7 @@ public class WelcomeView {
             prevBtn.setOnAction(e -> showStep(step - 1));
             buttons.getChildren().add(prevBtn);
         }
-        if (step < titles.length - 1) {
+        if (step < steps.length - 1) {
             Button nextBtn = buildButton("AVANTI >",
                     pixelFont, false);
             nextBtn.setOnAction(e -> showStep(step + 1));
