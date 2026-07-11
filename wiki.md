@@ -13,7 +13,9 @@
 6. [Persistenza dei Dati](#6-persistenza-dei-dati)
 7. [Estensibilità](#7-estensibilità)
 8. [Principi SOLID](#8-principi-solid)
-9. [Dichiarazione Uso AI](#9-dichiarazione-uso-ai)
+9. [Altri Design Pattern Utilizzati](#9-altri-design-pattern-utilizzati)
+10. [Test](#10-test)
+11. [Dichiarazione Uso AI](#11-dichiarazione-uso-ai)
 
 ---
 
@@ -40,6 +42,11 @@ Conoscenza A.A. 2025/26.
 - Sistema di esplorazione con 6 luoghi visitabili
 - Sistema dialoghi a scelte multiple con requisiti
   di carisma
+- Indizi esclusivi ottenibili solo tramite dialogo,
+  distinti dagli indizi raccoglibili esplorando —
+  scoprire l'identità e i piani de "Il Corvo" richiede
+  effettivamente di parlare con i contatti, non solo
+  esplorare la mappa
 - Raccolta prove con dossier visibile
 - Sistema di articoli e pubblicazione rapporti
 - Sistema di reputazione/credibilità (obiettivo 100)
@@ -50,7 +57,11 @@ Conoscenza A.A. 2025/26.
 - Sistema giorni — 10 giorni per completare la missione
 - Pannello obiettivo sempre visibile che guida il
   giocatore passo passo
-- Persistenza dello stato di gioco in formato JSON
+- Persistenza completa dello stato di gioco in formato
+  JSON: salvataggio automatico alla pubblicazione di
+  un articolo, e caricamento tramite una schermata
+  "Continua / Nuova Partita" mostrata all'avvio se
+  esiste un salvataggio precedente
 - Schermata introduttiva con effetto macchina da
   scrivere e città notturna pixel art
 - Stile grafico sepia vintage anni '30
@@ -63,13 +74,16 @@ Il progetto segue il pattern architetturale
 Model-View-Controller (MVC):
 ### Model
 Contiene le classi del dominio del gioco.
-Non dipende né dalla View né dal Controller.
+Non dipende né dalla View né dal Controller — nessuna
+classe del package `model` importa componenti JavaFX.
 Ogni classe ha una responsabilità ben definita.
 
 ### View
 Contiene le classi JavaFX per la GUI.
 Dipende dal Controller per leggere e aggiornare i dati.
-Non contiene logica di gioco.
+Non contiene logica di gioco: la pubblicazione di un
+articolo, ad esempio, è delegata interamente al
+Controller tramite `writeArticleFromNotebook()`.
 
 ### Controller
 Collega Model e View.
@@ -85,35 +99,49 @@ Dipende dalle interfacce, non dalle implementazioni.
 #### GameCharacter (abstract)
 Classe astratta base per tutti i personaggi del gioco.
 Responsabilità: gestire nome e ruolo del personaggio.
-Dichiara il metodo astratto presentati() che ogni
+Dichiara il metodo astratto `introduceSelf()` che ogni
 sottoclasse deve implementare.
 
 #### Journalist extends GameCharacter
 Rappresenta il giornalista/agente controllato dal
 giocatore.
 Responsabilità: gestire taccuino indizi, articoli,
-luoghi visitati, missioni attive e completate.
+luoghi visitati (tracciati tramite id, non oggetti
+interi, per evitare di duplicare i dati dei luoghi
+nel file di salvataggio), missioni attive e completate.
 Aggiorna automaticamente le statistiche ad ogni azione.
+Tutti i getter di collezioni restituiscono copie non
+modificabili, per proteggere lo stato interno da
+modifiche esterne non controllate.
 
-#### NPC extends GameCharacter
+#### NPC extends GameCharacter implements Identifiable
 Rappresenta i personaggi non giocanti della città.
 Responsabilità: contenere dialoghi e indizi fornibili
-al giocatore.
+al giocatore. Getter di collezioni con copie difensive,
+come Journalist.
 
 #### Location implements Identifiable, Describable
 Rappresenta un luogo della città esplorabile.
-Responsabilità: contenere gli indizi presenti e
-tracciare se è stato visitato.
+Responsabilità: contenere gli indizi presenti, tracciare
+se è stato visitato, e fornire i dati necessari alla
+sua rappresentazione visiva sulla mappa (coordinate,
+simbolo, colore, nome breve). Questo rende la mappa
+(`MapView`) completamente guidata dai dati: aggiungere
+un nuovo luogo richiede solo una voce in `locations.json`.
 
 #### Clue implements Identifiable, Describable, Discoverable
 Rappresenta una prova raccoglibile.
 Responsabilità: contenere la descrizione e tracciare
-se è stata scoperta.
+se è stata scoperta. Alcuni indizi hanno un luogo
+associato (raccoglibili esplorando), altri no — sono
+ottenibili solo tramite un dialogo specifico con un NPC.
 
 #### Article implements Identifiable, Publishable
 Rappresenta un articolo scritto dal giornalista.
-Responsabilità: contenere le prove usate e calcolare
-il valore di reputazione (ogni prova vale 10 punti).
+Responsabilità: contenere gli id delle prove usate
+(non gli oggetti interi, per lo stesso motivo di
+Journalist) e calcolare il valore di reputazione
+(ogni prova vale 10 punti).
 
 #### PlayerStats
 Gestisce le statistiche RPG del personaggio.
@@ -121,20 +149,26 @@ Responsabilità: intelligenza, carisma, furtività,
 livello ed esperienza. Gestisce il level-up automatico
 ogni 100 XP.
 
-#### Quest
+#### Quest implements Identifiable
 Rappresenta una missione del gioco.
 Responsabilità: tenere traccia degli obiettivi e
 verificare il completamento della missione.
-
-#### DialogueChoice
-Rappresenta una scelta in un dialogo con un NPC.
-Responsabilità: contenere testo, risposta, requisito
-di carisma e ricompensa in esperienza.
+`equals()`/`hashCode()` basati sull'id garantiscono
+un confronto corretto anche tra istanze diverse create
+da un caricamento da file.
 
 #### GameState
 Rappresenta lo stato corrente del gioco.
-Responsabilità: contenere il giornalista e la posizione
-corrente per la serializzazione JSON.
+Responsabilità: contenere il giornalista e l'id del
+luogo corrente per la serializzazione JSON.
+
+#### GameStats
+Classe di utilità per le statistiche di gioco,
+collocata nel package `model` insieme al resto del
+dominio.
+Responsabilità: usare Stream API per calcoli sui dati
+(prove scoperte, reputazione derivata dagli articoli,
+articoli pubblicati, raggruppamento prove per stato).
 
 ### Package controller
 
@@ -142,11 +176,16 @@ corrente per la serializzazione JSON.
 Controller principale del gioco.
 Responsabilità: inizializzare il gioco dai file JSON,
 gestire movimento, raccolta prove, dialoghi, missioni,
-metro sospetto, sistema giorni e persistenza.
-Usa ReputationCalculator come lambda per il calcolo
+metro sospetto, sistema giorni e persistenza (sia
+salvataggio che caricamento tramite `loadGame()`).
+Usa `ReputationCalculator` come lambda per il calcolo
 della reputazione.
-Fornisce getCurrentObjective() per guidare il giocatore
-passo passo.
+Fornisce `getCurrentObjective()` per guidare il
+giocatore passo passo.
+Il risultato di una scelta di dialogo è rappresentato
+da `DialogueResult`, un `record` interno — un value
+object immutabile invece di una classe con campi
+pubblici mutabili.
 
 ### Package repository
 
@@ -158,7 +197,9 @@ in formato JSON tramite la libreria Gson.
 Responsabilità: caricare i dati di gioco dai file JSON
 in resources (locations, clues, npcs, quests).
 Contiene le inner class NpcData, ChoiceData e QuestData
-per la deserializzazione dei dati.
+per la deserializzazione dei dati grezzi. Segnala in
+modo esplicito (eccezione con messaggio chiaro) il caso
+in cui un file atteso non venga trovato nelle risorse.
 
 ### Package view
 
@@ -167,28 +208,50 @@ Vista principale del gioco.
 Responsabilità: mostrare mappa, statistiche, dossier,
 missioni, obiettivo corrente e log messaggi.
 Mostra il pulsante "OTTIENI PROVE" solo quando ci
-sono prove disponibili nel luogo corrente.
+sono prove disponibili nel luogo corrente. Il pulsante
+"SCRIVI RAPPORTO" si disabilita automaticamente quando
+il taccuino è vuoto, tramite binding JavaFX
+(`disableProperty().bind(...)`) invece di un controllo
+manuale ripetuto. Applica un foglio di stile condiviso
+(`style.css`) anche ai dialoghi nativi (Alert,
+TextInputDialog), per uniformarli visivamente al resto
+del gioco.
 
 #### MapView
 Vista della mappa con movimento WASD e frecce.
 Responsabilità: disegnare la mappa pixel art su Canvas
 JavaFX, gestire il movimento del personaggio animato
 tramite AnimationTimer, notificare il controller
-al cambio di posizione.
+al cambio di posizione. Le posizioni, i colori e i
+simboli degli edifici non sono più definiti nel codice:
+vengono letti direttamente dagli oggetti `Location`,
+già caricati dal Controller. L'input da tastiera è
+gestito tramite Command Pattern: ogni tasto è associato
+a un comando di movimento registrato in una mappa,
+invece di una catena di `if/else` — aggiungere un nuovo
+controllo richiede solo una riga in più, senza toccare
+la logica di aggiornamento.
 
 #### WelcomeView
 Schermata introduttiva con tutorial a più passi.
 Responsabilità: mostrare la storia del gioco con
 effetto macchina da scrivere e sfondo città notturna
-pixel art disegnata su Canvas.
+pixel art disegnata su Canvas (disegnato una sola volta
+e riutilizzato tra gli step, non ridisegnato ad ogni
+cambio). Ogni step del tutorial è rappresentato da un
+`record` (`TutorialStep`) che accoppia titolo e
+contenuto, invece di due array paralleli da mantenere
+sincronizzati a mano. Se esiste un salvataggio
+precedente, mostra una schermata "Continua / Nuova
+Partita" prima del tutorial.
 
-### Package principale
-
-#### GameStats
-Classe di utilità per le statistiche di gioco.
-Responsabilità: usare Stream API per calcoli sui dati
-(prove scoperte, reputazione totale, articoli pubblicati,
-raggruppamento prove per stato).
+#### FontRegistry
+Registro singleton per il font pixel art del gioco.
+Responsabilità: caricare il file del font una sola
+volta in assoluto (indipendentemente da quante view lo
+richiedano) e fornire qualsiasi dimensione richiesta
+riutilizzando la stessa famiglia già in memoria, invece
+di rileggere il file da risorse ad ogni view.
 
 ---
 
@@ -200,11 +263,18 @@ piccole e mirate:
 | Interfaccia | Responsabilità | Implementata da |
 |-------------|----------------|-----------------|
 | GameRepository | Persistenza stato gioco | JsonGameRepository |
-| Identifiable | Fornisce un ID univoco | Clue, Location, Article |
+| Identifiable | Fornisce un ID univoco | Clue, Location, Article, NPC, Quest |
 | Describable | Fornisce una descrizione | Clue, Location |
 | Discoverable | Può essere scoperto | Clue |
 | Publishable | Può essere pubblicato | Article |
-| ReputationCalculator | Calcola reputazione | Lambda in GameController |
+| ReputationCalculator | Calcola reputazione (`@FunctionalInterface`) | Lambda in GameController |
+
+`Discoverable` include anche un metodo `default`
+(`discoveryStatus()`), che restituisce una descrizione
+testuale dello stato di scoperta riusando i due metodi
+astratti dell'interfaccia — dimostra l'uso dei metodi
+`default` nelle interfacce Java visto a lezione, senza
+che le classi che la implementano debbano definirlo.
 
 ---
 
@@ -214,21 +284,34 @@ piccole e mirate:
 I dati del gioco sono definiti in file JSON nella
 cartella src/main/resources/:
 
-- locations.json — 6 luoghi con coordinate mappa
-- clues.json — 10 prove disponibili
+- locations.json — 6 luoghi, con descrizione narrativa
+  e con i dati necessari alla rappresentazione sulla
+  mappa (coordinate, simbolo, colore, nome breve)
+- clues.json — 15 prove: 10 raccoglibili esplorando i
+  luoghi, 5 ottenibili solo tramite un dialogo specifico
+  con un NPC (identificabili dall'assenza di un luogo
+  associato)
 - npcs.json — 5 personaggi con dialoghi e scelte
-- quests.json — 4 missioni con obiettivi
+- quests.json — missioni con obiettivi
 
 Questi file vengono caricati all'avvio tramite
 GameDataLoader usando la libreria Gson.
 Modificare questi file non richiede modifiche al
-codice Java — questo è un esempio di OCP applicato.
+codice Java, mappa inclusa — questo è un esempio di
+OCP applicato end-to-end.
 
 ### Stato di gioco (dinamico)
 Lo stato viene salvato automaticamente in
 savegame.json ogni volta che il giocatore pubblica
 un articolo. La classe JsonGameRepository gestisce
 la serializzazione e deserializzazione tramite Gson.
+Per evitare di duplicare i dati nel file di salvataggio,
+`Journalist` e `Article` salvano gli **id** delle
+entità collegate (luoghi visitati, indizi usati) invece
+degli oggetti interi. Il caricamento è effettivamente
+collegato all'esperienza di gioco: se un salvataggio
+esiste, all'avvio viene proposta la scelta tra
+"Continua" e "Nuova Partita".
 
 ---
 
@@ -239,14 +322,18 @@ estensioni su più dispositivi (desktop, mobile, web)
 grazie alla separazione MVC e all'uso di interfacce.
 
 ### Aggiungere nuovi luoghi
-Aggiungere un elemento a locations.json senza
-modificare il codice Java. Il GameDataLoader carica
-automaticamente tutti i luoghi presenti nel file.
+Aggiungere un elemento a locations.json (con
+coordinate, simbolo e colore) senza modificare il
+codice Java. Sia il GameController sia la mappa
+(MapView) caricano automaticamente qualsiasi luogo
+presente nel file.
 
 ### Aggiungere nuovi NPC e dialoghi
 Aggiungere elementi a npcs.json con nuovi dialoghi
 e scelte multiple. Il sistema di carisma gestisce
-automaticamente le opzioni disponibili.
+automaticamente le opzioni disponibili. È possibile
+definire indizi esclusivi del dialogo semplicemente
+non assegnando loro un `locationId` in clues.json.
 
 ### Aggiungere nuove missioni
 Aggiungere elementi a quests.json. Il sistema di
@@ -260,7 +347,9 @@ senza modificare le altre classi.
 Creare una classe che implementa GameRepository
 (es. DatabaseGameRepository) e passarla al
 GameController senza modificare nient'altro.
-Questo è il principio DIP applicato.
+Questo è il principio DIP applicato — lo stesso
+meccanismo usato per fornire una repository fittizia
+in memoria durante i test (vedi sezione Test).
 
 ### Aggiungere nuova interfaccia grafica
 Creare una nuova View (es. per mobile o web) senza
@@ -277,8 +366,14 @@ Questo è possibile grazie a ReputationCalculator
 
 ### Aggiungere nuovi tipi di personaggio
 Creare una nuova classe che estende GameCharacter
-e implementa presentati(). Il polimorfismo garantisce
+e implementa introduceSelf(). Il polimorfismo garantisce
 la compatibilità con il resto del sistema.
+
+### Aggiungere nuovi comandi di input
+Grazie al Command Pattern usato in MapView, un nuovo
+controllo da tastiera si aggiunge registrando una nuova
+voce nella mappa `movementCommands`, senza toccare la
+logica di aggiornamento del personaggio.
 
 ### Estendere il sistema di sospetto
 Il metro del sospetto può essere esteso con:
@@ -303,16 +398,23 @@ Ogni classe ha una sola responsabilità:
 - JsonGameRepository gestisce solo la persistenza
 - PlayerStats gestisce solo le statistiche RPG
 - Quest gestisce solo una singola missione
+- FontRegistry gestisce solo il caricamento dei font
 
 ### O — Open/Closed Principle
 - Aggiungere nuovi luoghi/NPC/missioni modificando
-  solo i file JSON, senza toccare il codice Java
+  solo i file JSON, senza toccare il codice Java —
+  vale anche per la rappresentazione sulla mappa,
+  non solo per i dati di gioco
 - Nuovi tipi di persistenza si aggiungono implementando
   GameRepository
+- Nuovi comandi di input si aggiungono registrando
+  un nuovo `MovementCommand`, senza modificare
+  `updatePlayer()`
 
 ### L — Liskov Substitution Principle
 - JsonGameRepository sostituisce GameRepository
-  senza alterare il comportamento del controller
+  senza alterare il comportamento del controller —
+  lo stesso vale per InMemoryGameRepository nei test
 - Journalist e NPC sostituiscono GameCharacter
   rispettando il contratto della classe base
 
@@ -328,10 +430,68 @@ Ogni classe ha una sola responsabilità:
 - GameController dipende da GameRepository
   (astrazione) non da JsonGameRepository (concreto)
 - Schema: Controller → Interfaccia ← Implementazione
+- Nei test, la stessa astrazione permette di sostituire
+  JsonGameRepository con InMemoryGameRepository senza
+  toccare il Controller
 
 ---
 
-## 9. Dichiarazione Uso AI
+## 9. Altri Design Pattern Utilizzati
+
+Oltre ai principi SOLID, il progetto applica alcuni
+design pattern specifici:
+
+### Command Pattern
+In `MapView`, ogni tasto di movimento è associato a un
+comando (`MovementCommand`) registrato in una mappa,
+invece di una catena di `if/else`. Aggiungere un nuovo
+controllo richiede solo una nuova registrazione.
+
+### Singleton
+`FontRegistry` garantisce che il font pixel art venga
+caricato una sola volta in tutta l'applicazione e
+riutilizzato da tutte le view, invece di essere
+riletto da risorse ripetutamente.
+
+### Strategy (tramite lambda)
+`ReputationCalculator`, essendo un'interfaccia
+funzionale, permette di cambiare l'algoritmo di calcolo
+della reputazione fornendo una lambda diversa, senza
+modificare `GameController`.
+
+### Value Object (tramite `record`)
+`DialogueResult` (in GameController) e `TutorialStep`
+(in WelcomeView) sono `record`: oggetti dato immutabili,
+usati al posto di classi con campi pubblici mutabili
+o di array paralleli da mantenere sincronizzati a mano.
+
+---
+
+## 10. Test
+
+Il progetto include test JUnit 5 che verificano il
+comportamento di `GameController` senza toccare il
+filesystem, grazie a una repository fittizia in memoria:
+
+### InMemoryGameRepository (src/test/java)
+Implementazione di `GameRepository` che tiene lo stato
+in una variabile invece di scriverlo su file. Resa
+possibile dal principio DIP: `GameController` dipende
+dall'interfaccia, non dall'implementazione concreta,
+quindi può ricevere questa repository fittizia al posto
+di `JsonGameRepository` durante i test.
+
+### GameControllerTest
+Verifica: assenza di salvataggi su una partita nuova,
+disponibilità del salvataggio dopo `saveGame()`,
+corretto aumento di sospetto e avanzamento dei giorni
+dopo uno spostamento, corretto conteggio degli indizi
+raccolti in un luogo, ed eccezione corretta quando si
+tenta di spostarsi verso un luogo inesistente.
+
+---
+
+## 11. Dichiarazione Uso AI
 
 Durante lo sviluppo del progetto è stato utilizzato
 Claude (Anthropic) come assistente AI.
@@ -348,7 +508,8 @@ Claude (Anthropic) come assistente AI.
 - Configurazione — supporto per Gradle, JavaFX,
   dipendenze
 - Revisione e miglioramento dello stile del codice
-  per renderlo più leggibile e naturale
+- Analisi comparativa con altri progetti del corso
+  per identificare margini di miglioramento
 
 ### Livello di intervento personale
 - Tutte le scelte architetturali sono state discusse
@@ -366,6 +527,9 @@ Lo studente è in grado di spiegare:
 - La struttura MVC e le responsabilità di ogni layer
 - L'applicazione dei principi SOLID nel codice
 - Il funzionamento delle Stream API e delle lambda
-- Il meccanismo di persistenza JSON con Gson
+- Il meccanismo di persistenza JSON con Gson e la
+  scelta di salvare id invece di oggetti interi
 - La gerarchia di classi e interfacce
 - Il sistema RPG con statistiche e missioni
+- I design pattern aggiuntivi utilizzati (Command,
+  Singleton) e perché sono stati scelti
