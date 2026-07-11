@@ -13,12 +13,12 @@ public class Article implements Identifiable, Publishable {
     private String id;
     private String title;
     private String content;
-    private List<Clue> cluesUsed;
+    private List<String> clueIds;
     private boolean published;
 
     // costruttore vuoto serve a Gson per deserializzare
     public Article() {
-        this.cluesUsed = new ArrayList<>();
+        this.clueIds = new ArrayList<>();
         this.published = false;
     }
 
@@ -30,7 +30,7 @@ public class Article implements Identifiable, Publishable {
         this.id = id;
         this.title = title;
         this.content = "";
-        this.cluesUsed = new ArrayList<>();
+        this.clueIds = new ArrayList<>();
         this.published = false;
     }
 
@@ -48,17 +48,19 @@ public class Article implements Identifiable, Publishable {
         this.content = content;
     }
 
+    // salvo solo l'id dell'indizio, non l'oggetto intero: evita di
+    // duplicare i dati dell'indizio nel file di salvataggio
+    // (lo stesso Clue e' gia' presente per intero nel notebook)
     public void addClue(Clue clue) {
-        if (clue == null) return;
-        // evito duplicati
-        if (!cluesUsed.contains(clue)) {
-            cluesUsed.add(clue);
+        if (clue == null || clue.getId() == null) return;
+        if (!clueIds.contains(clue.getId())) {
+            clueIds.add(clue.getId());
         }
     }
 
     @Override
     public void publish() {
-        if (cluesUsed.isEmpty())
+        if (clueIds.isEmpty())
             throw new IllegalStateException(
                     "Servono almeno un indizio per pubblicare");
         this.published = true;
@@ -66,13 +68,13 @@ public class Article implements Identifiable, Publishable {
 
     // copia difensiva: chi chiama non puo' modificare la lista
     // interna bypassando addClue()
-    public List<Clue> getCluesUsed() {
-        return Collections.unmodifiableList(cluesUsed);
+    public List<String> getClueIds() {
+        return Collections.unmodifiableList(clueIds);
     }
 
     // ogni indizio vale 10 punti reputazione
     public int getReputationValue() {
-        return cluesUsed.size() * 10;
+        return clueIds.size() * 10;
     }
 
     @Override

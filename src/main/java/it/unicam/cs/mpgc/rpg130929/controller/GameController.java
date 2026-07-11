@@ -252,6 +252,27 @@ public class GameController {
         return repository.hasSavedGame();
     }
 
+    // carica una partita salvata, se presente; restituisce true se riuscito
+    public boolean loadGame() {
+        if (!repository.hasSavedGame()) return false;
+        GameState state = repository.loadGame();
+        if (state == null) return false;
+
+        this.journalist = state.getJournalist();
+
+        Location savedLocation = locations.get(state.getCurrentLocationId());
+        this.currentLocation = savedLocation != null ?
+                savedLocation : locations.get("redazione");
+
+        // riallineo lo stato "visitato" dei luoghi con quanto salvato
+        journalist.getVisitedLocationIds().forEach(id -> {
+            Location location = locations.get(id);
+            if (location != null) location.visit();
+        });
+
+        return true;
+    }
+
     public int getTotalClues() { return clues.size(); }
 
     public int getDiscoveredCluesCount() {

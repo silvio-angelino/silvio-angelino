@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // il personaggio principale controllato dal giocatore
@@ -10,7 +11,7 @@ public class Journalist extends GameCharacter {
     private PlayerStats stats;
     private List<Clue> notebook;
     private List<Article> articles;
-    private List<Location> visitedLocations;
+    private List<String> visitedLocationIds;
     private List<Quest> activeQuests;
     private List<Quest> completedQuests;
 
@@ -19,7 +20,7 @@ public class Journalist extends GameCharacter {
         super();
         this.notebook = new ArrayList<>();
         this.articles = new ArrayList<>();
-        this.visitedLocations = new ArrayList<>();
+        this.visitedLocationIds = new ArrayList<>();
         this.activeQuests = new ArrayList<>();
         this.completedQuests = new ArrayList<>();
         this.stats = new PlayerStats();
@@ -31,7 +32,7 @@ public class Journalist extends GameCharacter {
         this.stats = new PlayerStats();
         this.notebook = new ArrayList<>();
         this.articles = new ArrayList<>();
-        this.visitedLocations = new ArrayList<>();
+        this.visitedLocationIds = new ArrayList<>();
         this.activeQuests = new ArrayList<>();
         this.completedQuests = new ArrayList<>();
     }
@@ -72,11 +73,13 @@ public class Journalist extends GameCharacter {
         stats.addExperience(50);
     }
 
+    // salvo solo l'id del luogo, non l'oggetto intero: evita di
+    // duplicare gli indizi del luogo (gia' presenti nel notebook)
     public void visitLocation(Location location) {
         if (location == null)
             throw new IllegalArgumentException("Luogo non valido");
-        if (!visitedLocations.contains(location)) {
-            visitedLocations.add(location);
+        if (!visitedLocationIds.contains(location.getId())) {
+            visitedLocationIds.add(location.getId());
             location.visit();
             stats.addExperience(10);
         }
@@ -101,17 +104,25 @@ public class Journalist extends GameCharacter {
         }
     }
 
-    public List<Clue> getNotebook() { return notebook; }
-
-    public List<Article> getArticles() { return articles; }
-
-    public List<Location> getVisitedLocations() {
-        return visitedLocations;
+    // copie difensive: chi chiama non puo' modificare le liste
+    // interne bypassando i metodi dedicati (addClueToNotebook, ecc.)
+    public List<Clue> getNotebook() {
+        return Collections.unmodifiableList(notebook);
     }
 
-    public List<Quest> getActiveQuests() { return activeQuests; }
+    public List<Article> getArticles() {
+        return Collections.unmodifiableList(articles);
+    }
+
+    public List<String> getVisitedLocationIds() {
+        return Collections.unmodifiableList(visitedLocationIds);
+    }
+
+    public List<Quest> getActiveQuests() {
+        return Collections.unmodifiableList(activeQuests);
+    }
 
     public List<Quest> getCompletedQuests() {
-        return completedQuests;
+        return Collections.unmodifiableList(completedQuests);
     }
 }

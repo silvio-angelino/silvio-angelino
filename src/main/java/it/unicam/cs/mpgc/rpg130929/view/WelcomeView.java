@@ -75,7 +75,69 @@ public class WelcomeView {
     }
 
     public void show() {
-        showStep(0);
+        if (controller.hasSavedGame()) {
+            showContinueOrNewChoice();
+        } else {
+            showStep(0);
+        }
+    }
+
+    // schermata iniziale se esiste un salvataggio: continua o nuova partita
+    private void showContinueOrNewChoice() {
+        VBox content = new VBox(20);
+        content.setPadding(new Insets(40));
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(680);
+        content.setStyle(
+                "-fx-background-color: rgba(5,2,0,0.90);" +
+                        "-fx-border-color: " + DARK_GOLD + ";" +
+                        "-fx-border-width: 3px;");
+
+        Label titleLabel = new Label("IL CRONISTA");
+        titleLabel.setStyle(
+                "-fx-text-fill: " + GOLD + ";" +
+                        "-fx-effect: dropshadow(gaussian," +
+                        DARK_GOLD + ",15,0.7,0,0);");
+        if (titleFont != null)
+            titleLabel.setFont(Font.font(titleFont.getFamily(), 22));
+
+        Label subLabel = new Label(
+                "E' stato trovato un salvataggio precedente.");
+        subLabel.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
+        subLabel.setWrapText(true);
+        if (pixelFont != null)
+            subLabel.setFont(Font.font(pixelFont.getFamily(), 10));
+
+        Separator sep = new Separator();
+        sep.setStyle(
+                "-fx-background-color: " + DARK_GOLD + ";" +
+                        "-fx-opacity: 0.4;");
+
+        HBox buttons = new HBox(20);
+        buttons.setAlignment(Pos.CENTER);
+
+        Button continueBtn = buildButton(">> CONTINUA <<", pixelFont, true);
+        continueBtn.setOnAction(e -> {
+            controller.loadGame();
+            new GameView(controller, stage).show();
+        });
+
+        Button newGameBtn = buildButton("NUOVA PARTITA", pixelFont, false);
+        newGameBtn.setOnAction(e -> showStep(0));
+
+        buttons.getChildren().addAll(continueBtn, newGameBtn);
+
+        content.getChildren().addAll(titleLabel, subLabel, sep, buttons);
+
+        StackPane root = new StackPane();
+        root.setStyle("-fx-background-color: " + BG_DARK + ";");
+        root.getChildren().addAll(bgCanvas, content);
+
+        Scene scene = new Scene(root, 1280, 800);
+        scene.setFill(Color.web(BG_DARK));
+        stage.setTitle("IL CRONISTA - OPERAZIONE OMBRA");
+        stage.setScene(scene);
+        stage.show();
     }
 
     private void showStep(int step) {
