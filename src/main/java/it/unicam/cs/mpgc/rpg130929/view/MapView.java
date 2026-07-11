@@ -1,6 +1,7 @@
 package it.unicam.cs.mpgc.rpg130929.view;
 
 import it.unicam.cs.mpgc.rpg130929.controller.GameController;
+import it.unicam.cs.mpgc.rpg130929.model.Location;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -8,9 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 // gestisce la mappa del gioco con il personaggio animato
@@ -34,7 +33,6 @@ public class MapView {
     private String direction = "down";
 
     private final Set<KeyCode> pressedKeys = new HashSet<>();
-    private final Map<String, int[]> locationPositions;
     private Font pixelFont;
 
     public MapView(GameController controller, Runnable onLocationChange) {
@@ -42,26 +40,14 @@ public class MapView {
         this.onLocationChange = onLocationChange;
         this.canvas = new Canvas(MAP_WIDTH * TILE_SIZE,
                 MAP_HEIGHT * TILE_SIZE);
-        this.locationPositions = new HashMap<>();
 
         pixelFont = Font.loadFont(
                 getClass().getClassLoader()
                         .getResourceAsStream("PressStart2P-Regular.ttf"), 7);
 
-        initLocationPositions();
         setupKeyHandlers();
         startGameLoop();
         draw();
-    }
-
-    // coordinate fisse per ogni luogo sulla mappa
-    private void initLocationPositions() {
-        locationPositions.put("redazione", new int[]{5, 5});
-        locationPositions.put("porto", new int[]{2, 8});
-        locationPositions.put("ambasciata", new int[]{9, 2});
-        locationPositions.put("mercato", new int[]{3, 3});
-        locationPositions.put("osteria", new int[]{8, 7});
-        locationPositions.put("stazione", new int[]{10, 5});
     }
 
     private void setupKeyHandlers() {
@@ -128,12 +114,10 @@ public class MapView {
 
     // controlla se il giocatore è arrivato su un edificio
     private void checkLocationReached() {
-        for (Map.Entry<String, int[]> entry :
-                locationPositions.entrySet()) {
-            int[] pos = entry.getValue();
-            if ((int) playerX == pos[0] &&
-                    (int) playerY == pos[1]) {
-                controller.moveToLocation(entry.getKey());
+        for (Location location : controller.getAllLocations()) {
+            if ((int) playerX == location.getX() &&
+                    (int) playerY == location.getY()) {
+                controller.moveToLocation(location.getId());
                 onLocationChange.run();
                 break;
             }
@@ -207,27 +191,25 @@ public class MapView {
     }
 
     private void drawBuildings(GraphicsContext gc) {
-        for (Map.Entry<String, int[]> entry :
-                locationPositions.entrySet()) {
-            int[] pos = entry.getValue();
-            String id = entry.getKey();
+        for (Location location : controller.getAllLocations()) {
             boolean isCurrent = controller.getCurrentLocation()
-                    .getId().equals(id);
-            drawBuilding(gc, pos[0], pos[1], id, isCurrent);
+                    .getId().equals(location.getId());
+            drawBuilding(gc, location, isCurrent);
         }
     }
 
-    private void drawBuilding(GraphicsContext gc, int x, int y,
-                              String id, boolean isCurrent) {
-        double px = x * TILE_SIZE;
-        double py = y * TILE_SIZE;
+    private void drawBuilding(GraphicsContext gc, Location location,
+                              boolean isCurrent) {
+        double px = location.getX() * TILE_SIZE;
+        double py = location.getY() * TILE_SIZE;
 
         // ombra
         gc.setFill(Color.web("#000000", 0.5));
         gc.fillRect(px + 4, py + 4,
                 TILE_SIZE - 4, TILE_SIZE - 4);
 
-        Color baseColor = getBuildingColor(id, isCurrent);
+        Color baseColor = isCurrent ?
+                Color.web("#2a4a2a") : Color.web(location.getColor());
         Color darkColor = baseColor.darker().darker();
         Color lightColor = baseColor.brighter();
 
@@ -267,7 +249,7 @@ public class MapView {
         gc.setFill(isCurrent ?
                 Color.web("#FFD700") : Color.web("#ffffff"));
         if (pixelFont != null) gc.setFont(pixelFont);
-        gc.fillText(getLocationSymbol(id),
+        gc.fillText(location.getSymbol(),
                 px + TILE_SIZE / 2 - 3, py + 12);
 
         // evidenzia il luogo corrente
@@ -279,19 +261,6 @@ public class MapView {
             gc.strokeRect(px + 1, py + 1,
                     TILE_SIZE - 4, TILE_SIZE - 4);
         }
-    }
-
-    private Color getBuildingColor(String id, boolean isCurrent) {
-        if (isCurrent) return Color.web("#2a4a2a");
-        return switch (id) {
-            case "redazione" -> Color.web("#1a2a3a");
-            case "porto" -> Color.web("#1a1a2a");
-            case "ambasciata" -> Color.web("#2a1a1a");
-            case "mercato" -> Color.web("#2a2a1a");
-            case "osteria" -> Color.web("#2a1a2a");
-            case "stazione" -> Color.web("#1a2a2a");
-            default -> Color.web("#1a1a1a");
-        };
     }
 
     // disegna il personaggio animato
@@ -381,22 +350,19 @@ public class MapView {
 
     private void drawLocationNames(GraphicsContext gc) {
         if (pixelFont != null) gc.setFont(pixelFont);
-        for (Map.Entry<String, int[]> entry :
-                locationPositions.entrySet()) {
-            int[] pos = entry.getValue();
-            String id = entry.getKey();
+        for (Location location : controller.getAllLocations()) {
             boolean isCurrent = controller.getCurrentLocation()
-                    .getId().equals(id);
+                    .getId().equals(location.getId());
 
-            double px = pos[0] * TILE_SIZE;
-            double py = pos[1] * TILE_SIZE;
+            double px = location.getX() * TILE_SIZE;
+            double py = location.getY() * TILE_SIZE;
 
             gc.setFill(Color.web("#000000", 0.7));
             gc.fillRect(px - 2, py - 14, TILE_SIZE + 4, 12);
 
             gc.setFill(isCurrent ?
                     Color.web("#FFD700") : Color.web("#aaaaaa"));
-            gc.fillText(getLocationShortName(id), px, py - 4);
+            gc.fillText(location.getShortName(), px, py - 4);
         }
     }
 
@@ -424,30 +390,6 @@ public class MapView {
         gc.fillText(controller.getCurrentLocation()
                         .getName().toUpperCase(),
                 10, MAP_HEIGHT * TILE_SIZE - 10);
-    }
-
-    private String getLocationSymbol(String id) {
-        return switch (id) {
-            case "redazione" -> "R";
-            case "porto" -> "P";
-            case "ambasciata" -> "A";
-            case "mercato" -> "M";
-            case "osteria" -> "O";
-            case "stazione" -> "S";
-            default -> "?";
-        };
-    }
-
-    private String getLocationShortName(String id) {
-        return switch (id) {
-            case "redazione" -> "REDAZIONE";
-            case "porto" -> "PORTO";
-            case "ambasciata" -> "AMBASCIATA";
-            case "mercato" -> "MERCATO";
-            case "osteria" -> "OSTERIA";
-            case "stazione" -> "STAZIONE";
-            default -> "???";
-        };
     }
 
     public Canvas getCanvas() { return canvas; }

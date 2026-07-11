@@ -16,9 +16,13 @@ public class Location implements Identifiable, Describable {
     private List<Clue> clues;
     private boolean visited;
 
-    // posizione sulla mappa, letta dal JSON (usata da MapView)
+    // dati per la visualizzazione sulla mappa (MapView), letti dal JSON
+    // cosi' un nuovo luogo si aggiunge modificando solo locations.json
     private int x;
     private int y;
+    private String symbol;
+    private String color;
+    private String shortName;
 
     // serve a Gson
     public Location() {
@@ -51,6 +55,16 @@ public class Location implements Identifiable, Describable {
     public int getX() { return x; }
 
     public int getY() { return y; }
+
+    public String getSymbol() { return symbol; }
+
+    public String getColor() { return color; }
+
+    // nome breve per la mappa; se non presente nel JSON,
+    // ripiega sul nome completo in maiuscolo
+    public String getShortName() {
+        return shortName != null ? shortName : name.toUpperCase();
+    }
 
     public void visit() {
         this.visited = true;
