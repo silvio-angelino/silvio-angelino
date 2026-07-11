@@ -9,8 +9,8 @@ import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// controller principale che gestisce tutta la logica di gioco
-// dipende da GameRepository (interfaccia) e non da JsonGameRepository (DIP)
+// Main controller that manages all game logic
+// Depends on GameRepository (interface), not on JsonGameRepository (DIP)
 public class GameController {
 
     private final GameRepository repository;
@@ -24,7 +24,7 @@ public class GameController {
     private final Map<String, List<GameDataLoader.ChoiceData>> npcChoices;
     private Location currentLocation;
 
-    // sistema sospetto e giorni
+    // Suspicion and days system
     private int suspicionLevel;
     private int daysRemaining;
     private static final int MAX_SUSPICION = 100;
@@ -36,7 +36,7 @@ public class GameController {
         this.repository = repository;
         this.dataLoader = new GameDataLoader();
 
-        // uso una lambda per il calcolo della reputazione
+        // Using a lambda for reputation calculation
         this.reputationCalculator = cluesCount -> cluesCount * 10;
 
         this.locations = new HashMap<>();
@@ -59,7 +59,7 @@ public class GameController {
         journalist.visitLocation(currentLocation);
     }
 
-    // carico gli indizi dal JSON e li metto nella mappa
+    // Load clues from JSON and store them in the map
     private void loadClues() {
         dataLoader.loadClues().forEach(clue ->
                 clues.put(clue.getId(), clue));
@@ -67,7 +67,7 @@ public class GameController {
 
     private void loadLocations() {
         dataLoader.loadLocations().forEach(location -> {
-            // aggiungo gli indizi al luogo corrispondente
+            // Add clues to the corresponding location
             clues.values().stream()
                     .filter(clue -> clue.getLocationId() != null &&
                             clue.getLocationId().equals(location.getId()))
@@ -112,7 +112,7 @@ public class GameController {
         return Collections.unmodifiableCollection(locations.values());
     }
 
-    // restituisce solo gli NPC presenti nel luogo corrente
+    // Returns only the NPCs present in the current location
     public List<NPC> getNpcsInCurrentLocation() {
         return dataLoader.loadNpcs().stream()
                 .filter(data -> data.locationId
@@ -133,7 +133,7 @@ public class GameController {
             throw new IllegalArgumentException("Luogo non trovato");
         currentLocation = location;
         journalist.visitLocation(location);
-        // muoversi aumenta il sospetto e avanza il giorno
+        // Moving increases suspicion and advances the day
         increaseSuspicion(5);
         advanceDay();
         checkQuestObjectives();
@@ -157,7 +157,7 @@ public class GameController {
         return clues.get(clueId);
     }
 
-    // gestisce la scelta di dialogo e restituisce il risultato
+    // Handles the dialogue choice and returns the result
     public DialogueResult processChoice(String npcId,
                                         GameDataLoader.ChoiceData choice) {
         boolean canUse = journalist.getStats()
@@ -217,7 +217,7 @@ public class GameController {
     public Article createArticle(String title) {
         if (title == null || title.isEmpty())
             throw new IllegalArgumentException("Titolo non valido");
-        // uso il timestamp come id univoco
+        // Using timestamp as unique id
         Article article = new Article(
                 "a" + System.currentTimeMillis(), title);
         journalist.addArticle(article);
@@ -226,7 +226,7 @@ public class GameController {
 
     public void publishArticle(Article article) {
         journalist.publishArticle(article);
-        // pubblicare un articolo riduce il sospetto
+        // Publishing an article reduces suspicion
         decreaseSuspicion(15);
         saveGame();
     }
@@ -301,7 +301,7 @@ public class GameController {
         return "";
     }
 
-    // restituisce l'obiettivo corrente in base allo stato del gioco
+    // Returns the current objective based on game state
     public String getCurrentObjective() {
         int clues = getDiscoveredCluesCount();
         int npcsContacted = (int) npcs.values().stream()
@@ -334,7 +334,7 @@ public class GameController {
         }
     }
 
-    // classe interna per il risultato di una scelta di dialogo
+    // Inner class for the result of a dialogue choice
     public static class DialogueResult {
         public final boolean success;
         public final String response;
