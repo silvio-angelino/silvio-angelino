@@ -37,7 +37,7 @@ public class Journalist extends GameCharacter {
     }
 
     @Override
-    public void presentati() {
+    public void introduceSelf() {
         System.out.println("Sono " + getName() +
                 ", agente segreto sotto copertura.");
     }

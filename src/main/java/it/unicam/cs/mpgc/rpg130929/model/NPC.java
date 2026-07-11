@@ -1,10 +1,12 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
+import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // personaggio non giocante con cui il giornalista può parlare
-public class NPC extends GameCharacter {
+public class NPC extends GameCharacter implements Identifiable {
 
     private String id;
     private List<String> dialogues;
@@ -27,11 +29,12 @@ public class NPC extends GameCharacter {
     }
 
     @Override
-    public void presentati() {
+    public void introduceSelf() {
         System.out.println("Sono " + getName() +
                 ", " + getRole() + ".");
     }
 
+    @Override
     public String getId() { return id; }
 
     public void addDialogue(String dialogue) {

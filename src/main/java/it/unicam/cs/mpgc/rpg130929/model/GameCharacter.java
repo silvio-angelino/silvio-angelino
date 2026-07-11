@@ -24,7 +24,7 @@ public abstract class GameCharacter {
     public String getRole() { return role; }
 
     // ogni personaggio si presenta in modo diverso
-    public abstract void presentati();
+    public abstract void introduceSelf();
 
     @Override
     public String toString() {
