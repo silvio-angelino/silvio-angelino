@@ -9,8 +9,8 @@ import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// Main controller that manages all game logic
-// Depends on GameRepository (interface), not on JsonGameRepository (DIP)
+// controller principale che gestisce tutta la logica di gioco
+// dipende da GameRepository (interfaccia) e non da JsonGameRepository (DIP)
 public class GameController {
 
     private final GameRepository repository;
@@ -24,7 +24,7 @@ public class GameController {
     private final Map<String, List<GameDataLoader.ChoiceData>> npcChoices;
     private Location currentLocation;
 
-    // Suspicion and days system
+    // sistema sospetto e giorni
     private int suspicionLevel;
     private int daysRemaining;
     private static final int MAX_SUSPICION = 100;
@@ -36,7 +36,7 @@ public class GameController {
         this.repository = repository;
         this.dataLoader = new GameDataLoader();
 
-        // Using a lambda for reputation calculation
+        // uso una lambda per il calcolo della reputazione
         this.reputationCalculator = cluesCount -> cluesCount * 10;
 
         this.locations = new HashMap<>();
@@ -59,7 +59,7 @@ public class GameController {
         journalist.visitLocation(currentLocation);
     }
 
-    // Load clues from JSON and store them in the map
+    // carico gli indizi dal JSON e li metto nella mappa
     private void loadClues() {
         dataLoader.loadClues().forEach(clue ->
                 clues.put(clue.getId(), clue));
@@ -67,7 +67,7 @@ public class GameController {
 
     private void loadLocations() {
         dataLoader.loadLocations().forEach(location -> {
-            // Add clues to the corresponding location
+            // aggiungo gli indizi al luogo corrispondente
             clues.values().stream()
                     .filter(clue -> clue.getLocationId() != null &&
                             clue.getLocationId().equals(location.getId()))
@@ -112,7 +112,7 @@ public class GameController {
         return Collections.unmodifiableCollection(locations.values());
     }
 
-    // Returns only the NPCs present in the current location
+    // restituisce solo gli NPC presenti nel luogo corrente
     public List<NPC> getNpcsInCurrentLocation() {
         return dataLoader.loadNpcs().stream()
                 .filter(data -> data.locationId
@@ -133,7 +133,7 @@ public class GameController {
             throw new IllegalArgumentException("Luogo non trovato");
         currentLocation = location;
         journalist.visitLocation(location);
-        // Moving increases suspicion and advances the day
+        // muoversi aumenta il sospetto e avanza il giorno
         increaseSuspicion(5);
         advanceDay();
         checkQuestObjectives();
@@ -146,18 +146,21 @@ public class GameController {
         checkQuestObjectives();
     }
 
-    public void collectAllCluesInCurrentLocation() {
-        currentLocation.getClues().stream()
+    // restituisce il numero di indizi effettivamente trovati
+    public int collectAllCluesInCurrentLocation() {
+        List<Clue> newlyCollected = currentLocation.getClues().stream()
                 .filter(clue -> !clue.isDiscovered())
-                .forEach(this::collectClue);
+                .collect(Collectors.toList());
+        newlyCollected.forEach(this::collectClue);
         increaseSuspicion(10);
+        return newlyCollected.size();
     }
 
     public Clue getClueById(String clueId) {
         return clues.get(clueId);
     }
 
-    // Handles the dialogue choice and returns the result
+    // gestisce la scelta di dialogo e restituisce il risultato
     public DialogueResult processChoice(String npcId,
                                         GameDataLoader.ChoiceData choice) {
         boolean canUse = journalist.getStats()
@@ -217,7 +220,7 @@ public class GameController {
     public Article createArticle(String title) {
         if (title == null || title.isEmpty())
             throw new IllegalArgumentException("Titolo non valido");
-        // Using timestamp as unique id
+        // uso il timestamp come id univoco
         Article article = new Article(
                 "a" + System.currentTimeMillis(), title);
         journalist.addArticle(article);
@@ -226,9 +229,17 @@ public class GameController {
 
     public void publishArticle(Article article) {
         journalist.publishArticle(article);
-        // Publishing an article reduces suspicion
+        // pubblicare un articolo riduce il sospetto
         decreaseSuspicion(15);
         saveGame();
+    }
+
+    // crea un articolo con tutte le prove del taccuino e lo pubblica
+    public Article writeArticleFromNotebook(String title) {
+        Article article = createArticle(title);
+        journalist.getNotebook().forEach(article::addClue);
+        publishArticle(article);
+        return article;
     }
 
     public void saveGame() {
@@ -301,7 +312,7 @@ public class GameController {
         return "";
     }
 
-    // Returns the current objective based on game state
+    // restituisce l'obiettivo corrente in base allo stato del gioco
     public String getCurrentObjective() {
         int clues = getDiscoveredCluesCount();
         int npcsContacted = (int) npcs.values().stream()
@@ -334,7 +345,7 @@ public class GameController {
         }
     }
 
-    // Inner class for the result of a dialogue choice
+    // classe interna per il risultato di una scelta di dialogo
     public static class DialogueResult {
         public final boolean success;
         public final String response;
