@@ -3,6 +3,7 @@ package it.unicam.cs.mpgc.rpg130929.view;
 import it.unicam.cs.mpgc.rpg130929.controller.GameController;
 import it.unicam.cs.mpgc.rpg130929.model.*;
 import it.unicam.cs.mpgc.rpg130929.repository.GameDataLoader;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -300,6 +301,10 @@ public class GameView {
             writeArticle();
             mapView.getCanvas().requestFocus();
         });
+        // binding: il pulsante si disabilita da solo quando il taccuino
+        // e' vuoto, senza bisogno di controllarlo manualmente in updateView()
+        writeBtn.disableProperty().bind(
+                Bindings.isEmpty(cluesList.getItems()));
 
         right.getChildren().addAll(dossierTitle, dossierHint,
                 cluesList, sep1, questTitle, questPanel, sep2, writeBtn);
