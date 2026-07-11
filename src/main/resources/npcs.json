@@ -9,7 +9,7 @@
       "Certe casse non andrebbero aperte.",
       "Vattene prima che sia troppo tardi."
     ],
-    "clueIds": ["c1"],
+    "clueIds": ["c11"],
     "choices": [
       {
         "text": "Cosa contengono quelle casse?",
@@ -29,7 +29,7 @@
         "text": "Ho prove che ti incastrano. Collabora.",
         "response": "Va bene... il capo si chiama Il Corvo. Opera dall'ambasciata.",
         "requiredCharisma": 9,
-        "clueId": "c1",
+        "clueId": "c11",
         "experienceReward": 50
       }
     ]
@@ -44,7 +44,7 @@
       "I nostri affari non riguardano la stampa.",
       "Certi segreti costano la vita."
     ],
-    "clueIds": ["c3"],
+    "clueIds": ["c12"],
     "choices": [
       {
         "text": "Sono qui per un'intervista ufficiale.",
@@ -64,7 +64,7 @@
         "text": "So del piano militare. Parlami del Corvo.",
         "response": "Come sai di lui?! Il Corvo si incontra ogni venerdi al molo 7.",
         "requiredCharisma": 10,
-        "clueId": "c3",
+        "clueId": "c12",
         "experienceReward": 60
       }
     ]
@@ -79,7 +79,7 @@
       "Ogni martedi notte si incontrano al molo.",
       "Compra qualcosa o vattene."
     ],
-    "clueIds": ["c5"],
+    "clueIds": ["c13"],
     "choices": [
       {
         "text": "Cosa hai visto di strano?",
@@ -99,7 +99,7 @@
         "text": "Ti proteggero'. Dimmi tutto quello che sai.",
         "response": "Il Corvo e' un funzionario del governo! Opera dall'interno!",
         "requiredCharisma": 8,
-        "clueId": "c6",
+        "clueId": "c13",
         "experienceReward": 45
       }
     ]
@@ -114,7 +114,7 @@
       "Il governo sa tutto ma fa finta di niente.",
       "Certi nomi non si pronunciano ad alta voce."
     ],
-    "clueIds": ["c7"],
+    "clueIds": ["c14"],
     "choices": [
       {
         "text": "Cosa sai delle spie in citta'?",
@@ -134,7 +134,7 @@
         "text": "Ho prove della tua corruzione. Parlami del Corvo.",
         "response": "Il Corvo si nasconde alla stazione! Parte domani notte!",
         "requiredCharisma": 9,
-        "clueId": "c8",
+        "clueId": "c14",
         "experienceReward": 55
       }
     ]
@@ -149,7 +149,7 @@
       "Ho visto uomini in nero scaricare valigie.",
       "Mi hanno pagato per non vedere nulla."
     ],
-    "clueIds": ["c9"],
+    "clueIds": ["c15"],
     "choices": [
       {
         "text": "Cosa hai visto alla stazione?",
@@ -169,7 +169,7 @@
         "text": "Quell'uomo e' Il Corvo. Aiutami a fermarlo.",
         "response": "Parte col treno delle 23:00! Binario 7! Fate presto!",
         "requiredCharisma": 7,
-        "clueId": "c10",
+        "clueId": "c15",
         "experienceReward": 50
       }
     ]

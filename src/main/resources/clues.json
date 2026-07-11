@@ -48,5 +48,30 @@
     "id": "c10",
     "description": "Un biglietto ferroviario con destinazione misteriosa",
     "locationId": "stazione"
+  },
+  {
+    "id": "c11",
+    "description": "Confessione della spia al porto: il capo della rete si chiama 'Il Corvo' e opera dall'ambasciata",
+    "locationId": null
+  },
+  {
+    "id": "c12",
+    "description": "Il diplomatico rivela che Il Corvo si incontra ogni venerdi al molo 7",
+    "locationId": null
+  },
+  {
+    "id": "c13",
+    "description": "Carmela rivela che Il Corvo e' un funzionario del governo, opera dall'interno delle istituzioni",
+    "locationId": null
+  },
+  {
+    "id": "c14",
+    "description": "Il tenente corrotto rivela che Il Corvo si nasconde alla stazione e fuggira' domani notte",
+    "locationId": null
+  },
+  {
+    "id": "c15",
+    "description": "Nico rivela l'orario esatto della fuga de Il Corvo: treno delle 23:00, binario 7",
+    "locationId": null
   }
 ]
