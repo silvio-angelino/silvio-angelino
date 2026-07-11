@@ -40,10 +40,14 @@ public class GameDataLoader {
     // metodo generico per caricare qualsiasi file JSON
     private <T> T loadFromResources(String filename, Type type) {
         try (InputStream is = getClass().getClassLoader()
-                .getResourceAsStream(filename);
-             InputStreamReader reader =
-                     new InputStreamReader(is)) {
-            return gson.fromJson(reader, type);
+                .getResourceAsStream(filename)) {
+            if (is == null) {
+                throw new RuntimeException(
+                        "File non trovato in resources: " + filename);
+            }
+            try (InputStreamReader reader = new InputStreamReader(is)) {
+                return gson.fromJson(reader, type);
+            }
         } catch (IOException e) {
             throw new RuntimeException(
                     "Errore nel caricamento di " + filename, e);
