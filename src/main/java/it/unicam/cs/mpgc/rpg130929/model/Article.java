@@ -4,6 +4,7 @@ import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
 import it.unicam.cs.mpgc.rpg130929.interfaces.Publishable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // Rappresenta un articolo scritto dal giornalista
@@ -63,8 +64,10 @@ public class Article implements Identifiable, Publishable {
         this.published = true;
     }
 
+    // copia difensiva: chi chiama non puo' modificare la lista
+    // interna bypassando addClue()
     public List<Clue> getCluesUsed() {
-        return cluesUsed;
+        return Collections.unmodifiableList(cluesUsed);
     }
 
     // ogni indizio vale 10 punti reputazione
