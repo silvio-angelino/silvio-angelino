@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 // gestisce la mappa del gioco con il personaggio animato
@@ -32,8 +34,24 @@ public class MapView {
     private boolean moving = false;
     private String direction = "down";
 
+    // spostamento richiesto dal comando attivo in questo tick
+    private int pendingDx;
+    private int pendingDy;
+
     private final Set<KeyCode> pressedKeys = new HashSet<>();
     private Font pixelFont;
+
+    // comando di movimento: incapsula "cosa succede" quando un
+    // certo tasto e' premuto, senza che updatePlayer() debba saperlo
+    private interface MovementCommand {
+        void execute();
+    }
+
+    // ogni tasto e' associato a un comando. Aggiungere un nuovo
+    // controllo (es. una scorciatoia diversa) richiede solo una riga
+    // in piu' qui, senza toccare la logica di updatePlayer()
+    private final Map<KeyCode, MovementCommand> movementCommands =
+            new LinkedHashMap<>();
 
     public MapView(GameController controller, Runnable onLocationChange) {
         this.controller = controller;
@@ -45,9 +63,36 @@ public class MapView {
                 getClass().getClassLoader()
                         .getResourceAsStream("PressStart2P-Regular.ttf"), 7);
 
+        setupMovementCommands();
         setupKeyHandlers();
         startGameLoop();
         draw();
+    }
+
+    // registra i comandi nello stesso ordine di priorita' che aveva
+    // la vecchia catena if/else: W/UP, poi S/DOWN, poi A/LEFT, poi D/RIGHT
+    private void setupMovementCommands() {
+        MovementCommand up = () -> {
+            pendingDx = 0; pendingDy = -1; direction = "up";
+        };
+        MovementCommand down = () -> {
+            pendingDx = 0; pendingDy = 1; direction = "down";
+        };
+        MovementCommand left = () -> {
+            pendingDx = -1; pendingDy = 0; direction = "left";
+        };
+        MovementCommand right = () -> {
+            pendingDx = 1; pendingDy = 0; direction = "right";
+        };
+
+        movementCommands.put(KeyCode.W, up);
+        movementCommands.put(KeyCode.UP, up);
+        movementCommands.put(KeyCode.S, down);
+        movementCommands.put(KeyCode.DOWN, down);
+        movementCommands.put(KeyCode.A, left);
+        movementCommands.put(KeyCode.LEFT, left);
+        movementCommands.put(KeyCode.D, right);
+        movementCommands.put(KeyCode.RIGHT, right);
     }
 
     private void setupKeyHandlers() {
@@ -77,31 +122,23 @@ public class MapView {
     }
 
     private void updatePlayer() {
-        double newX = playerX;
-        double newY = playerY;
+        pendingDx = 0;
+        pendingDy = 0;
         moving = false;
 
-        if (pressedKeys.contains(KeyCode.W) ||
-                pressedKeys.contains(KeyCode.UP)) {
-            newY--;
-            direction = "up";
-            moving = true;
-        } else if (pressedKeys.contains(KeyCode.S) ||
-                pressedKeys.contains(KeyCode.DOWN)) {
-            newY++;
-            direction = "down";
-            moving = true;
-        } else if (pressedKeys.contains(KeyCode.A) ||
-                pressedKeys.contains(KeyCode.LEFT)) {
-            newX--;
-            direction = "left";
-            moving = true;
-        } else if (pressedKeys.contains(KeyCode.D) ||
-                pressedKeys.contains(KeyCode.RIGHT)) {
-            newX++;
-            direction = "right";
-            moving = true;
+        // eseguo solo il primo comando corrispondente a un tasto premuto,
+        // rispettando l'ordine di registrazione (stessa priorita' di prima)
+        for (Map.Entry<KeyCode, MovementCommand> entry :
+                movementCommands.entrySet()) {
+            if (pressedKeys.contains(entry.getKey())) {
+                entry.getValue().execute();
+                moving = true;
+                break;
+            }
         }
+
+        double newX = playerX + pendingDx;
+        double newY = playerY + pendingDy;
 
         if (moving && newX >= 0 && newX < MAP_WIDTH
                 && newY >= 0 && newY < MAP_HEIGHT) {

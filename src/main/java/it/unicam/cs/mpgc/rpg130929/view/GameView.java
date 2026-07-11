@@ -707,17 +707,17 @@ public class GameView {
             choiceBtn.setOnAction(e -> {
                 GameController.DialogueResult result =
                         controller.processChoice(npc.getId(), choice);
-                responseLabel.setText("\"" + result.response + "\"");
-                if (result.success) {
+                responseLabel.setText("\"" + result.response() + "\"");
+                if (result.success()) {
                     responseLabel.setStyle(
                             "-fx-text-fill: " + GOLD +
                                     "; -fx-font-style: italic;");
-                    if (result.discoveredClue != null) {
+                    if (result.discoveredClue() != null) {
                         addMessage("NUOVA PROVA: " +
-                                result.discoveredClue.getDescription());
+                                result.discoveredClue().getDescription());
                     }
-                    if (result.experienceGained > 0) {
-                        addMessage("+" + result.experienceGained +
+                    if (result.experienceGained() > 0) {
+                        addMessage("+" + result.experienceGained() +
                                 " XP guadagnati!");
                     }
                 } else {

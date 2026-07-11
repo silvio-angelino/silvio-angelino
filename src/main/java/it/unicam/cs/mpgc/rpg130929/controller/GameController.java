@@ -1,6 +1,5 @@
 package it.unicam.cs.mpgc.rpg130929.controller;
 
-import it.unicam.cs.mpgc.rpg130929.GameStats;
 import it.unicam.cs.mpgc.rpg130929.interfaces.GameRepository;
 import it.unicam.cs.mpgc.rpg130929.interfaces.ReputationCalculator;
 import it.unicam.cs.mpgc.rpg130929.model.*;
@@ -285,10 +284,6 @@ public class GameController {
         return reputationCalculator.calculate(cluesCount);
     }
 
-    public GameStats getGameStats() {
-        return new GameStats(journalist);
-    }
-
     public Collection<Quest> getActiveQuests() {
         return journalist.getActiveQuests();
     }
@@ -366,19 +361,7 @@ public class GameController {
         }
     }
 
-    // classe interna per il risultato di una scelta di dialogo
-    public static class DialogueResult {
-        public final boolean success;
-        public final String response;
-        public final Clue discoveredClue;
-        public final int experienceGained;
-
-        public DialogueResult(boolean success, String response,
-                              Clue discoveredClue, int experienceGained) {
-            this.success = success;
-            this.response = response;
-            this.discoveredClue = discoveredClue;
-            this.experienceGained = experienceGained;
-        }
-    }
+    // value object per il risultato di una scelta di dialogo
+    public record DialogueResult(boolean success, String response,
+                                 Clue discoveredClue, int experienceGained) {}
 }
