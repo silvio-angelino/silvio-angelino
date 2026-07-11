@@ -25,8 +25,10 @@ public class GameStats {
                 .count();
     }
 
-    // somma la reputazione di tutti gli articoli pubblicati
-    public int calculateTotalReputation() {
+    // somma la reputazione derivata solo dagli articoli pubblicati
+    // (non e' il totale: la reputazione del giornalista include
+    // anche il bonus dato dal completamento delle missioni)
+    public int calculateReputationFromArticles() {
         return journalist.getArticles().stream()
                 .filter(Article::isPublished)
                 .mapToInt(Article::getReputationValue)
@@ -58,6 +60,6 @@ public class GameStats {
                 "Articoli pubblicati: " +
                 getPublishedArticles().size() + "\n" +
                 "Reputazione totale: " +
-                calculateTotalReputation();
+                journalist.getReputation();
     }
 }
