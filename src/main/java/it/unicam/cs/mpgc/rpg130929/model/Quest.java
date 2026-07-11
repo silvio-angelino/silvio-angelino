@@ -1,10 +1,12 @@
 package it.unicam.cs.mpgc.rpg130929.model;
 
+import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // rappresenta una missione con obiettivi da completare
-public class Quest {
+public class Quest implements Identifiable {
 
     private String id;
     private String title;
@@ -41,7 +43,9 @@ public class Quest {
         }
     }
 
+    @Override
     public String getId() { return id; }
+
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public int getExperienceReward() { return experienceReward; }
@@ -80,5 +84,17 @@ public class Quest {
 
     public int getTotalObjectivesCount() {
         return objectives.size();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Quest other)) return false;
+        return this.id != null && this.id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
