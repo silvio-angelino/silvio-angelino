@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.util.List;
 
 // vista principale del gioco, gestisce tutta la GUI
@@ -55,6 +56,10 @@ public class GameView {
     private Font titleFont;
     private Font bigFont;
 
+    // percorso del foglio di stile, applicato ai dialoghi nativi
+    // (Alert, TextInputDialog) per uniformarli al tema del gioco
+    private final String styleSheetPath;
+
     // colori tema sepia
     private static final String GOLD = "#c8a96e";
     private static final String DARK_GOLD = "#8B6914";
@@ -79,6 +84,10 @@ public class GameView {
         this.bigFont = Font.loadFont(
                 getClass().getClassLoader()
                         .getResourceAsStream("PressStart2P-Regular.ttf"), 13);
+
+        // carico il foglio di stile una sola volta, se presente
+        URL cssUrl = getClass().getClassLoader().getResource("style.css");
+        this.styleSheetPath = cssUrl != null ? cssUrl.toExternalForm() : null;
     }
 
     public void show() {
@@ -136,12 +145,11 @@ public class GameView {
         if (pixelFont != null) cluesCountLabel.setFont(pixelFont);
 
         // barra del sospetto
-        VBox suspicionBox = buildBarBox("SOSPETTO", 150, RED);
-        suspicionBar = (Canvas) ((VBox) suspicionBox
-                .getChildren().get(1)).getChildren().get(0);
+        BarBox suspicionBox = buildBarBox("SOSPETTO", 150, RED);
+        suspicionBar = suspicionBox.canvas;
 
         top.getChildren().addAll(title, locationLabel,
-                daysLabel, levelLabel, cluesCountLabel, suspicionBox);
+                daysLabel, levelLabel, cluesCountLabel, suspicionBox.container);
         return top;
     }
 
@@ -209,34 +217,29 @@ public class GameView {
         barsBox.setAlignment(Pos.CENTER);
         barsBox.setPadding(new Insets(5, 0, 5, 0));
 
-        VBox xpBox = buildBarBox("ESPERIENZA", 250, "#4466cc");
-        xpBar = (Canvas) ((VBox) xpBox
-                .getChildren().get(1)).getChildren().get(0);
+        BarBox xpBox = buildBarBox("ESPERIENZA", 250, "#4466cc");
+        xpBar = xpBox.canvas;
         xpLabel = new Label("0 XP");
         xpLabel.setStyle("-fx-text-fill: #4466cc;");
         if (pixelFont != null)
             xpLabel.setFont(Font.font(pixelFont.getFamily(), 7));
-        xpBox.getChildren().add(xpLabel);
+        xpBox.container.getChildren().add(xpLabel);
 
-        VBox repBox = buildBarBox("CREDIBILITA'", 250, DARK_GOLD);
-        repBar = (Canvas) ((VBox) repBox
-                .getChildren().get(1)).getChildren().get(0);
+        BarBox repBox = buildBarBox("CREDIBILITA'", 250, DARK_GOLD);
+        repBar = repBox.canvas;
         repLabel = new Label("0 / 100");
         repLabel.setStyle("-fx-text-fill: " + DARK_GOLD + ";");
         if (pixelFont != null)
             repLabel.setFont(Font.font(pixelFont.getFamily(), 7));
-        repBox.getChildren().add(repLabel);
+        repBox.container.getChildren().add(repLabel);
 
-        barsBox.getChildren().addAll(xpBox, repBox);
+        barsBox.getChildren().addAll(xpBox.container, repBox.container);
 
         // questo pulsante appare solo quando ci sono prove da raccogliere
         collectBtn = buildButton("[ OTTIENI PROVE ]", GOLD);
         collectBtn.setVisible(false);
         collectBtn.setOnAction(e -> {
-            int before = controller.getDiscoveredCluesCount();
-            controller.collectAllCluesInCurrentLocation();
-            int after = controller.getDiscoveredCluesCount();
-            int found = after - before;
+            int found = controller.collectAllCluesInCurrentLocation();
             if (found > 0) {
                 addMessage("Trovate " + found + " prove in " +
                         controller.getCurrentLocation().getName() + "!");
@@ -333,8 +336,20 @@ public class GameView {
         return bottom;
     }
 
+    // piccola struttura di supporto: tiene insieme il container e il canvas
+    // della barra, evitando di doverli ripescare con cast fragili
+    private static class BarBox {
+        final VBox container;
+        final Canvas canvas;
+
+        BarBox(VBox container, Canvas canvas) {
+            this.container = container;
+            this.canvas = canvas;
+        }
+    }
+
     // crea una barra di progresso con canvas
-    private VBox buildBarBox(String label, int width, String color) {
+    private BarBox buildBarBox(String label, int width, String color) {
         VBox box = new VBox(3);
         box.setAlignment(Pos.CENTER_LEFT);
 
@@ -352,7 +367,7 @@ public class GameView {
                         "-fx-border-width: 1px;");
 
         box.getChildren().addAll(lbl, barContainer);
-        return box;
+        return new BarBox(box, bar);
     }
 
     // disegna la barra colorata sul canvas
@@ -436,6 +451,14 @@ public class GameView {
                         "-fx-border-width: 2px;" +
                         "-fx-padding: 10px;"));
         return btn;
+    }
+
+    // applica il foglio di stile del gioco a un dialogo nativo,
+    // se il file e' stato trovato in resources
+    private void applyStylesheet(DialogPane pane) {
+        if (styleSheetPath != null) {
+            pane.getStylesheets().add(styleSheetPath);
+        }
     }
 
     // aggiorna tutti i componenti della vista
@@ -724,6 +747,7 @@ public class GameView {
                 " | " + npc.getRole());
         String dialogue = String.join("\n\n", npc.getDialogues());
         alert.setContentText(dialogue);
+        applyStylesheet(alert.getDialogPane());
         alert.showAndWait();
         updateView();
     }
@@ -741,12 +765,10 @@ public class GameView {
                         "Prove disponibili: " +
                         controller.getJournalist().getNotebook().size());
         dialog.setContentText("Titolo del rapporto:");
+        applyStylesheet(dialog.getDialogPane());
         dialog.showAndWait().ifPresent(title -> {
             if (!title.isEmpty()) {
-                Article article = controller.createArticle(title);
-                controller.getJournalist().getNotebook()
-                        .forEach(article::addClue);
-                controller.publishArticle(article);
+                Article article = controller.writeArticleFromNotebook(title);
                 addMessage("Rapporto \"" + title +
                         "\" pubblicato! +" +
                         article.getReputationValue() + " credibilita'.");
@@ -781,6 +803,7 @@ public class GameView {
                         controller.getJournalist().getReputation() +
                         "\nLivello raggiunto: " +
                         controller.getJournalist().getStats().getLevel());
+        applyStylesheet(alert.getDialogPane());
         alert.showAndWait();
     }
 
@@ -800,6 +823,7 @@ public class GameView {
                         "Prove raccolte: " +
                         controller.getDiscoveredCluesCount() +
                         "/" + controller.getTotalClues());
+        applyStylesheet(alert.getDialogPane());
         alert.showAndWait();
     }
 }
