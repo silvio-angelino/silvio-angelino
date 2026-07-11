@@ -4,6 +4,7 @@ import it.unicam.cs.mpgc.rpg130929.interfaces.Describable;
 import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // rappresenta un luogo della città che il giocatore può visitare
@@ -14,6 +15,10 @@ public class Location implements Identifiable, Describable {
     private String description;
     private List<Clue> clues;
     private boolean visited;
+
+    // posizione sulla mappa, letta dal JSON (usata da MapView)
+    private int x;
+    private int y;
 
     // serve a Gson
     public Location() {
@@ -43,6 +48,10 @@ public class Location implements Identifiable, Describable {
 
     public boolean isVisited() { return visited; }
 
+    public int getX() { return x; }
+
+    public int getY() { return y; }
+
     public void visit() {
         this.visited = true;
     }
@@ -53,8 +62,10 @@ public class Location implements Identifiable, Describable {
             clues.add(clue);
     }
 
+    // copia difensiva: chi chiama non puo' modificare la lista
+    // interna bypassando addClue()
     public List<Clue> getClues() {
-        return clues;
+        return Collections.unmodifiableList(clues);
     }
 
     @Override

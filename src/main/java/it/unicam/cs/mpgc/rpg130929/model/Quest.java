@@ -3,6 +3,7 @@ package it.unicam.cs.mpgc.rpg130929.model;
 import it.unicam.cs.mpgc.rpg130929.interfaces.Identifiable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // rappresenta una missione con obiettivi da completare
@@ -51,8 +52,10 @@ public class Quest implements Identifiable {
     public int getExperienceReward() { return experienceReward; }
     public boolean isCompleted() { return completed; }
 
+    // copia difensiva: chi chiama non puo' modificare la lista
+    // interna degli obiettivi
     public List<String> getObjectives() {
-        return objectives;
+        return Collections.unmodifiableList(objectives);
     }
 
     // segna un obiettivo come completato

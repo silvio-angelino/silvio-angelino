@@ -19,8 +19,4 @@ public class GameState {
     public Journalist getJournalist() { return journalist; }
 
     public String getCurrentLocationId() { return currentLocationId; }
-
-    public void setCurrentLocationId(String locationId) {
-        this.currentLocationId = locationId;
-    }
 }
