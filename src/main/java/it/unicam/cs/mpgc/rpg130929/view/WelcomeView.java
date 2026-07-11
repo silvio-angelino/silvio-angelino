@@ -61,13 +61,10 @@ public class WelcomeView {
         this.controller = controller;
         this.stage = stage;
 
-        // carico i font una sola volta, non ad ogni cambio di step
-        this.pixelFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 11);
-        this.titleFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 22);
+        // carico i font dal registro condiviso, invece di rileggerli
+        // da risorse (qui e in ogni altra view)
+        this.pixelFont = FontRegistry.getInstance().get(11);
+        this.titleFont = FontRegistry.getInstance().get(22);
 
         // disegno lo sfondo una sola volta, non cambia tra gli step
         this.bgCanvas = new Canvas(1280, 800);

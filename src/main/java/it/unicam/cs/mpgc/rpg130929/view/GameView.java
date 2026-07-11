@@ -75,16 +75,11 @@ public class GameView {
         this.controller = controller;
         this.stage = stage;
 
-        // carico il font pixel art dalle risorse
-        this.pixelFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 8);
-        this.titleFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 10);
-        this.bigFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 13);
+        // carico il font pixel art dal registro condiviso,
+        // invece di rileggerlo da risorse ad ogni view
+        this.pixelFont = FontRegistry.getInstance().get(8);
+        this.titleFont = FontRegistry.getInstance().get(10);
+        this.bigFont = FontRegistry.getInstance().get(13);
 
         // carico il foglio di stile una sola volta, se presente
         URL cssUrl = getClass().getClassLoader().getResource("style.css");

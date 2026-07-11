@@ -59,9 +59,7 @@ public class MapView {
         this.canvas = new Canvas(MAP_WIDTH * TILE_SIZE,
                 MAP_HEIGHT * TILE_SIZE);
 
-        pixelFont = Font.loadFont(
-                getClass().getClassLoader()
-                        .getResourceAsStream("PressStart2P-Regular.ttf"), 7);
+        pixelFont = FontRegistry.getInstance().get(7);
 
         setupMovementCommands();
         setupKeyHandlers();
