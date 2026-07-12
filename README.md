@@ -39,22 +39,22 @@ cd il-cronista
 
 ## Come si gioca
 
-- **WASD / Frecce** — Muovi il personaggio sulla mappa
-- **OTTIENI PROVE** — Appare automaticamente quando
-  sei in un luogo con prove disponibili
-- **Parla con i CONTATTI** — Clicca sui personaggi
-  per ottenere informazioni. Alcuni dialoghi rivelano
-  indizi esclusivi sulla trama, non ottenibili in
-  nessun altro modo
-- **SCRIVI RAPPORTO** — Quando hai abbastanza prove
-  scrivi il rapporto finale
-- **Obiettivo** — Raggiungi 100 di credibilità
-  entro 10 giorni senza essere scoperto
-- **Attenzione** — Evita che il sospetto raggiunga
-  100 o la missione fallirà!
-- **Continua partita** — Se esiste un salvataggio,
-  all'avvio puoi scegliere se riprendere o iniziare
-  una nuova partita
+→ **WASD / Frecce** Muovi il personaggio sulla mappa
+→ **OTTIENI PROVE** Appare automaticamente quando
+sei in un luogo con prove disponibili
+→ **Parla con i CONTATTI** Clicca sui personaggi
+per ottenere informazioni. Alcuni dialoghi rivelano
+indizi esclusivi sulla trama, non ottenibili in
+nessun altro modo
+→ **SCRIVI RAPPORTO** Quando hai abbastanza prove
+scrivi il rapporto finale
+→ **Obiettivo** Raggiungi 100 di credibilità
+entro 10 giorni senza essere scoperto
+→ **Attenzione** Evita che il sospetto raggiunga
+100 o la missione fallirà!
+→ **Continua partita** Se esiste un salvataggio,
+all'avvio puoi scegliere se riprendere o iniziare
+una nuova partita
 
 ---
 
@@ -107,13 +107,8 @@ vedi la Wiki del repository.
 
 ## Uso di strumenti di AI
 
-Utilizzato **Claude (Anthropic)** come assistente AI per:
+Utilizzato **Claude (Anthropic)** come assistente IA per:
 
-- Supporto nella progettazione dell'architettura MVC
-- Spiegazione e applicazione dei principi SOLID
-- Supporto nella configurazione di Gradle e JavaFX
-- Generazione di porzioni di codice, successivamente
-  comprese e adattate personalmente
-- Revisione e miglioramento dello stile del codice
-
-Per una descrizione dettagliata consultare la **Wiki del repository**.
+- Assimilare concetti teorici
+- Automatizzazione codice ripetitivo
+- Suggerimenti sulla struttura del codice
