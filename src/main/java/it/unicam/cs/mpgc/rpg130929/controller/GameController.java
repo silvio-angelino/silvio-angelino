@@ -21,6 +21,11 @@ public class GameController {
     private final Map<String, Clue> clues;
     private final Map<String, Quest> quests;
     private final Map<String, List<GameDataLoader.ChoiceData>> npcChoices;
+
+    // indice NPC-per-luogo costruito una sola volta al caricamento,
+    // invece di rileggere il JSON grezzo ad ogni richiesta
+    private final Map<String, List<NPC>> npcsByLocation;
+
     private Location currentLocation;
 
     // sistema sospetto e giorni
@@ -43,6 +48,7 @@ public class GameController {
         this.clues = new HashMap<>();
         this.quests = new HashMap<>();
         this.npcChoices = new HashMap<>();
+        this.npcsByLocation = new HashMap<>();
         this.suspicionLevel = 0;
         this.daysRemaining = MAX_DAYS;
         initializeGame();
@@ -87,6 +93,12 @@ public class GameController {
             if (npcData.choices != null) {
                 npcChoices.put(npc.getId(), npcData.choices);
             }
+            // indicizzo l'NPC per luogo una sola volta, qui,
+            // cosi' getNpcsInCurrentLocation() non deve piu'
+            // rileggere il JSON grezzo ad ogni chiamata
+            npcsByLocation
+                    .computeIfAbsent(npcData.locationId, k -> new ArrayList<>())
+                    .add(npc);
         });
     }
 
@@ -111,14 +123,12 @@ public class GameController {
         return Collections.unmodifiableCollection(locations.values());
     }
 
-    // restituisce solo gli NPC presenti nel luogo corrente
+    // restituisce solo gli NPC presenti nel luogo corrente,
+    // leggendo dall'indice gia' pronto invece di ricalcolarlo
     public List<NPC> getNpcsInCurrentLocation() {
-        return dataLoader.loadNpcs().stream()
-                .filter(data -> data.locationId
-                        .equals(currentLocation.getId()))
-                .map(data -> npcs.get(data.id))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                npcsByLocation.getOrDefault(
+                        currentLocation.getId(), Collections.emptyList()));
     }
 
     public List<GameDataLoader.ChoiceData> getChoicesForNpc(
