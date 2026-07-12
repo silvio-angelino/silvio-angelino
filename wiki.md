@@ -89,6 +89,9 @@ Controller tramite `writeArticleFromNotebook()`.
 Collega Model e View.
 Gestisce tutta la logica di gioco e la persistenza.
 Dipende dalle interfacce, non dalle implementazioni.
+Come il Model, non importa alcun componente JavaFX:
+espone solo metodi pubblici che qualunque tipo di View
+(desktop, mobile, web) può chiamare.
 
 ---
 
@@ -182,6 +185,8 @@ Usa `ReputationCalculator` come lambda per il calcolo
 della reputazione.
 Fornisce `getCurrentObjective()` per guidare il
 giocatore passo passo.
+Costruisce un indice NPC-per-luogo al caricamento
+iniziale, evitando di ricalcolarlo ad ogni richiesta.
 Il risultato di una scelta di dialogo è rappresentato
 da `DialogueResult`, un `record` interno — un value
 object immutabile invece di una classe con campi
@@ -321,6 +326,43 @@ Il progetto è progettato per supportare future
 estensioni su più dispositivi (desktop, mobile, web)
 grazie alla separazione MVC e all'uso di interfacce.
 
+### Estendere il progetto su più dispositivi
+
+L'architettura MVC scelta rende questa estensione
+concreta, non solo teorica: **nessuna classe del
+package `model` o `controller` importa componenti
+JavaFX**. Solo il package `view` dipende dal framework
+grafico. Questo significa che:
+
+**Cosa resterebbe identico** portando il gioco su un
+altro dispositivo:
+- Tutte le classi in `model/` (Journalist, NPC, Location,
+  Clue, Article, Quest, PlayerStats, GameState)
+- `GameController`, con tutta la logica di gioco
+- `GameRepository` e la sua implementazione JSON
+- I file di dati in `resources/` (locations.json,
+  clues.json, npcs.json, quests.json)
+
+**Cosa andrebbe scritto ex novo**, per ciascuna
+piattaforma:
+- **Mobile** (es. Android): una nuova implementazione
+  delle view che usi i widget nativi della piattaforma
+  al posto di `Canvas`/`Label`/`Button` di JavaFX,
+  chiamando comunque gli stessi metodi pubblici di
+  `GameController` (`moveToLocation()`,
+  `collectAllCluesInCurrentLocation()`,
+  `processChoice()`, ecc.)
+- **Web**: una nuova view che traduca lo stato del
+  `GameController` in HTML/JavaScript (o tramite un
+  framework come Vaadin, che permette di scrivere
+  la UI ancora in Java), comunicando con lo stesso
+  Controller lato server
+
+In entrambi i casi, il punto di contatto tra la nuova
+interfaccia e il resto del sistema resta lo stesso:
+i metodi pubblici di `GameController`, che non cambiano
+in base al dispositivo che li chiama.
+
 ### Aggiungere nuovi luoghi
 Aggiungere un elemento a locations.json (con
 coordinate, simbolo e colore) senza modificare il
@@ -350,11 +392,6 @@ GameController senza modificare nient'altro.
 Questo è il principio DIP applicato — lo stesso
 meccanismo usato per fornire una repository fittizia
 in memoria durante i test (vedi sezione Test).
-
-### Aggiungere nuova interfaccia grafica
-Creare una nuova View (es. per mobile o web) senza
-modificare il Model o il Controller. La separazione
-MVC garantisce questa estendibilità.
 
 ### Cambiare il calcolo della reputazione
 Modificare solo la lambda in GameController:
@@ -510,6 +547,8 @@ Claude (Anthropic) come assistente AI.
 - Revisione e miglioramento dello stile del codice
 - Analisi comparativa con altri progetti del corso
   per identificare margini di miglioramento
+- Verifica di conformità con la specifica ufficiale
+  del progetto
 
 ### Livello di intervento personale
 - Tutte le scelte architetturali sono state discusse
@@ -533,3 +572,6 @@ Lo studente è in grado di spiegare:
 - Il sistema RPG con statistiche e missioni
 - I design pattern aggiuntivi utilizzati (Command,
   Singleton) e perché sono stati scelti
+- In che modo l'architettura garantisce l'indipendenza
+  del Model e del Controller dal dispositivo/framework
+  grafico usato
