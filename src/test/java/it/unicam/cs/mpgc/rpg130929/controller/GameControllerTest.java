@@ -46,6 +46,6 @@ class GameControllerTest {
     @Test
     void spostarsiVersoLuogoInesistenteLanciaEccezione() {
         assertThrows(IllegalArgumentException.class,
-                () -> controller.moveToLocation("luogo_che_non_esiste"));
+                    () -> controller.moveToLocation("luogo_che_non_esiste"));
     }
 }
