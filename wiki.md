@@ -8,14 +8,15 @@
 1. Descrizione del Progetto
 2. Funzionalità Implementate
 3. Architettura MVC
-4. Classi e Responsabilità
-5. Interfacce
-6. Persistenza dei Dati
-7. Estensibilità
-8. Principi SOLID
-9. Altri Design Pattern Utilizzati
-10. Test
-11. Dichiarazione Uso AI
+4. Responsabilità Individuate
+5. Classi e Responsabilità
+6. Interfacce
+7. Persistenza dei Dati
+8. Estensibilità
+9. Principi SOLID
+10. Altri Design Pattern Utilizzati
+11. Test
+12. Dichiarazione Uso AI
 
 ---
 
@@ -96,7 +97,50 @@ espone solo metodi pubblici che qualunque tipo di View
 
 ---
 
-## 4. Classi e Responsabilità
+## 4. Responsabilità Individuate
+
+Prima di assegnare le responsabilità alle singole
+classi, sono state individuate le responsabilità
+principali che il sistema nel suo complesso deve
+garantire.
+
+→ Gestione del personaggio giocante: tracciare
+progressione, statistiche RPG, indizi raccolti,
+luoghi visitati e missioni attive
+→ Gestione del mondo di gioco: rappresentare i luoghi
+esplorabili e le informazioni necessarie alla loro
+visualizzazione
+→ Gestione dei personaggi non giocanti: fornire
+dialoghi, scelte a requisiti di carisma e indizi
+esclusivi
+→ Gestione delle prove: tracciare quali indizi sono
+stati scoperti e quali sono ancora disponibili
+→ Gestione degli articoli e della reputazione:
+calcolare il valore di reputazione derivato dalle
+prove utilizzate
+→ Gestione delle missioni: tracciare obiettivi e
+verificare il completamento
+→ Gestione dello stato di rischio: tracciare il
+livello di sospetto e i giorni rimasti, determinando
+le condizioni di vittoria e sconfitta
+→ Gestione della persistenza: salvare e caricare lo
+stato di gioco, senza vincolare il resto del sistema
+a un formato di salvataggio specifico
+→ Gestione del caricamento dei dati di configurazione:
+caricare luoghi, indizi, NPC e missioni da file
+esterni, separandoli dal codice
+→ Gestione dell'interfaccia utente: mostrare mappa,
+stato del personaggio, dialoghi e messaggi, e
+raccogliere l'input del giocatore
+
+Queste responsabilità di alto livello sono state
+distribuite tra le classi descritte nella sezione
+successiva, seguendo il principio di singola
+responsabilità (SRP).
+
+---
+
+## 5. Classi e Responsabilità
 
 ### Package model
 
@@ -262,7 +306,7 @@ di rileggere il file da risorse ad ogni view.
 
 ---
 
-## 5. Interfacce
+## 6. Interfacce
 
 Il progetto segue il principio ISP con interfacce
 piccole e mirate.
@@ -295,7 +339,7 @@ che le classi che la implementano debbano definirlo.
 
 ---
 
-## 6. Persistenza dei Dati
+## 7. Persistenza dei Dati
 
 ### Dati di configurazione (statici)
 
@@ -338,7 +382,7 @@ Continua e Nuova Partita.
 
 ---
 
-## 7. Estensibilità
+## 8. Estensibilità
 
 Il progetto è progettato per supportare future
 estensioni su più dispositivi (desktop, mobile, web)
@@ -449,7 +493,7 @@ altra logica.
 
 ---
 
-## 8. Principi SOLID Applicati
+## 9. Principi SOLID Applicati
 
 ### S, Single Responsibility Principle
 
@@ -498,7 +542,7 @@ InMemoryGameRepository senza toccare il Controller.
 
 ---
 
-## 9. Altri Design Pattern Utilizzati
+## 10. Altri Design Pattern Utilizzati
 
 Oltre ai principi SOLID, il progetto applica alcuni
 design pattern specifici.
@@ -527,7 +571,7 @@ da mantenere sincronizzati a mano.
 
 ---
 
-## 10. Test
+## 11. Test
 
 Il progetto include test JUnit 5 che verificano il
 comportamento di GameController senza toccare il
@@ -551,25 +595,24 @@ tenta di spostarsi verso un luogo inesistente.
 
 ---
 
-## 11. Dichiarazione Uso AI
+## 12. Dichiarazione Uso AI
 
 Durante lo sviluppo del progetto è stato utilizzato
 Claude (Anthropic) come assistente AI.
 
 ### Attività supportate dall'AI
 
-Progettazione architetturale: suggerimenti sulla
-struttura MVC e organizzazione dei package.
-Spiegazione concetti: chiarimenti sui principi SOLID,
-Clean Code, Stream API, JavaFX.
-Generazione codice: generazione di porzioni di codice
-successivamente comprese e adattate.
-Debug: supporto nell'identificazione e risoluzione
-di errori di compilazione.
-Configurazione: supporto per Gradle, JavaFX, dipendenze.
-Revisione e miglioramento dello stile del codice.
-Analisi comparativa con altri progetti del corso per
-identificare margini di miglioramento.
-Verifica di conformità con la specifica ufficiale
-del progetto.
+Assimilare concetti teorici: 
+Utilizzato per comprendere a fondo argomenti trattati a 
+lezione, come i principi SOLID, il pattern MVC, 
+l'uso delle Stream API in Java e le interfacce funzionali, 
+verificando poi ogni concetto del corso 
+prima di applicarlo sul codice.
 
+Automatizzazione del codice ripetitivo: Utilizzato per generare rapidamente elementi ripetitivi come getter, setter, 
+costruttori e piccoli blocchi di codice simili tra loro 
+(ad esempio la registrazione dei comandi di movimento in MapView).
+
+Suggerimenti sulla struttura del codice: Utilizzato per ricevere pareri su come organizzare 
+package e classi, ad esempio la separazione tra model, view, controller e repository,
+valutando poi personalmente quali suggerimenti applicare in base a quanto visto a lezione.
