@@ -74,7 +74,7 @@ Il progetto segue il pattern architetturale
 Model-View-Controller (MVC):
 ### Model
 Contiene le classi del dominio del gioco.
-Non dipende né dalla View né dal Controller — nessuna
+Non dipende né dalla View né dal Controller, nessuna
 classe del package `model` importa componenti JavaFX.
 Ogni classe ha una responsabilità ben definita.
 
